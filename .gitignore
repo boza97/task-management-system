@@ -1,0 +1,65 @@
+# =========================
+# OS & IDE
+# =========================
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/
+*.iml
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+application-local.yml
+application-dev.yml
+
+# =========================
+# Backend (Spring Boot)
+# =========================
+backend/target/
+backend/.mvn/
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# =========================
+# Frontend (Angular)
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# =========================
+# Build artifacts
+# =========================
+*.jar
+*.war
+
+# =========================
+# Coverage & test reports
+# =========================
+coverage/
+**/coverage/
+**/jacoco/
+**/surefire-reports/
+**/failsafe-reports/
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+
+# =========================
+# Misc
+# =========================
+*.tmp
+*.swp
