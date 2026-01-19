@@ -16,3 +16,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+security:
+  jwt:
+    secret: "#@!#assaD!@@#!@$SAD@$!%@!%@Ss$#!@$@$FASFQ@QFSAFASF_CHANGE_ME"
+    expiration-minutes: 60

@@ -1,0 +1,32 @@
+package com.example.task_management_system.auth;
+
+import com.example.task_management_system.auth.dto.LoginRequest;
+import com.example.task_management_system.user.User;
+import com.example.task_management_system.user.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
+
+    public String login(LoginRequest request) {
+        User user = userRepository.findByEmailWithRoles(request.getEmail())
+                                  .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid credentials");
+        }
+
+        return jwtService.generateToken(user);
+    }
+}
