@@ -14,9 +14,7 @@ public class RoleInitializer {
     @PostConstruct
     public void init() {
         createIfNotExists("ADMIN");
-        createIfNotExists("PROJECT_MANAGER");
-        createIfNotExists("DEVELOPER");
-        createIfNotExists("QA");
+        createIfNotExists("USER");
     }
 
     private void createIfNotExists(String roleName) {
