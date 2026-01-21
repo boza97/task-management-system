@@ -1,4 +1,4 @@
-package com.example.task_management_system.project;
+package com.example.task_management_system.project.membership;
 
 public enum ProjectRole {
     DEVELOPER,
