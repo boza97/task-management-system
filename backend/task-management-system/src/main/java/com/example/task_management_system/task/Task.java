@@ -53,6 +53,7 @@ public class Task {
     @Column(nullable = false)
     private TaskPriority priority;
 
+    @Column
     private LocalDate dueDate;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -85,7 +86,9 @@ public class Task {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = Instant.now();
+        Instant now = Instant.now();
+        createdAt = now;
+        updatedAt = now;
     }
 
     @PreUpdate
