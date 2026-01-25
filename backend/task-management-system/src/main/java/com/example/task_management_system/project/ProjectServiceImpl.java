@@ -1,6 +1,7 @@
 package com.example.task_management_system.project;
 
 import com.example.task_management_system.common.exception.ResourceNotFoundException;
+import com.example.task_management_system.common.security.CurrentUserProvider;
 import com.example.task_management_system.project.dto.ProjectCreateRequest;
 import com.example.task_management_system.project.dto.ProjectResponse;
 import com.example.task_management_system.project.dto.ProjectUpdateRequest;
@@ -23,18 +24,21 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMembershipRepository membershipRepository;
     private final UserRepository userRepository;
+    private final CurrentUserProvider currentUserProvider;
 
     public ProjectServiceImpl(ProjectRepository projectRepository,
                               ProjectMembershipRepository membershipRepository,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              CurrentUserProvider currentUserProvider) {
         this.projectRepository = projectRepository;
         this.membershipRepository = membershipRepository;
         this.userRepository = userRepository;
+        this.currentUserProvider = currentUserProvider;
     }
 
     @Override
     public ProjectResponse create(ProjectCreateRequest request) {
-        User currentUser = getCurrentUser();
+        User currentUser = currentUserProvider.getCurrentUser();
 
         if (projectRepository.existsByKey(request.key())) {
             throw new IllegalArgumentException("Project key already exists");
@@ -63,7 +67,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse getById(UUID projectId) {
         Project project = getProjectOrThrow(projectId);
-        User currentUser = getCurrentUser();
+        User currentUser = currentUserProvider.getCurrentUser();
 
         if (!isMemberOrOwner(project, currentUser)) {
             throw new SecurityException("Access denied");
@@ -74,7 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectResponse> getMyProjects() {
-        User currentUser = getCurrentUser();
+        User currentUser = currentUserProvider.getCurrentUser();
 
         return projectRepository.findAllByUser(currentUser.getId())
                                 .stream()
@@ -85,7 +89,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse update(UUID projectId, ProjectUpdateRequest request) {
         Project project = getProjectOrThrow(projectId);
-        User currentUser = getCurrentUser();
+        User currentUser = currentUserProvider.getCurrentUser();
 
         if (!project.getOwner().getId().equals(currentUser.getId())) {
             throw new SecurityException("Only project owner can update project");
@@ -100,7 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void delete(UUID projectId) {
         Project project = getProjectOrThrow(projectId);
-        User currentUser = getCurrentUser();
+        User currentUser = currentUserProvider.getCurrentUser();
 
         boolean isOwner = project.getOwner().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.hasRole("ADMIN");
@@ -110,15 +114,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         projectRepository.delete(project);
-    }
-
-    private User getCurrentUser() {
-        String email = Objects.requireNonNull(SecurityContextHolder.getContext()
-                                                                   .getAuthentication())
-                              .getName();
-
-        return userRepository.findByEmailWithRoles(email)
-                             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private Project getProjectOrThrow(UUID id) {
