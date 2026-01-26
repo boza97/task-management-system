@@ -12,10 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -24,6 +26,7 @@ import java.util.UUID;
 @Table(name = "project_membership",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"project_id", "user_id"})})
 @Getter
+@Setter
 @NoArgsConstructor
 public class ProjectMembership {
 
@@ -51,5 +54,12 @@ public class ProjectMembership {
         this.user = user;
         this.role = role;
         this.joinedAt = Instant.now();
+    }
+
+    @PrePersist
+    void onCreate() {
+        if (joinedAt == null) {
+            joinedAt = Instant.now();
+        }
     }
 }

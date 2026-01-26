@@ -11,11 +11,9 @@ import com.example.task_management_system.project.membership.ProjectRole;
 import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -123,7 +121,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private boolean isMemberOrOwner(Project project, User user) {
         return project.getOwner().getId().equals(user.getId()) ||
-               membershipRepository.existsByProjectAndUser(project, user);
+               membershipRepository.existsByProjectIdAndUserId(project.getId(), user.getId());
     }
 
     private ProjectResponse mapToResponse(Project project) {
