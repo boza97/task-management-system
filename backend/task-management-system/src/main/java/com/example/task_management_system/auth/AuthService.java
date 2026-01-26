@@ -20,10 +20,10 @@ public class AuthService {
     }
 
     public String login(LoginRequest request) {
-        User user = userRepository.findByEmailWithRoles(request.getEmail())
+        User user = userRepository.findByEmailWithRoles(request.email())
                                   .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid credentials");
         }
 

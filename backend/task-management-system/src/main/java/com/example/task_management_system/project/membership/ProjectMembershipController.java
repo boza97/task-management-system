@@ -3,6 +3,7 @@ package com.example.task_management_system.project.membership;
 import com.example.task_management_system.project.membership.dto.AddMemberRequest;
 import com.example.task_management_system.project.membership.dto.ChangeMemberRoleRequest;
 import com.example.task_management_system.project.membership.dto.ProjectMemberResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class ProjectMembershipController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProjectMemberResponse addMember(@PathVariable UUID projectId,
-                                           @RequestBody AddMemberRequest request) {
+                                           @Valid @RequestBody AddMemberRequest request) {
         return membershipService.addMember(projectId, request);
     }
 
@@ -42,7 +43,7 @@ public class ProjectMembershipController {
     @PatchMapping("/{userId}/role")
     public ProjectMemberResponse changeRole(@PathVariable UUID projectId,
                                             @PathVariable UUID userId,
-                                            @RequestBody ChangeMemberRoleRequest request) {
+                                            @Valid @RequestBody ChangeMemberRoleRequest request) {
         return membershipService.changeRole(projectId, userId, request);
     }
 

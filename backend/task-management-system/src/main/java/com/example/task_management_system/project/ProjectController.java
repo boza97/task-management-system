@@ -3,6 +3,7 @@ package com.example.task_management_system.project;
 import com.example.task_management_system.project.dto.ProjectCreateRequest;
 import com.example.task_management_system.project.dto.ProjectResponse;
 import com.example.task_management_system.project.dto.ProjectUpdateRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ProjectResponse create(@RequestBody ProjectCreateRequest request) {
+    public ProjectResponse create(@Valid @RequestBody ProjectCreateRequest request) {
         return projectService.create(request);
     }
 
@@ -42,7 +43,7 @@ public class ProjectController {
 
     @PutMapping("/{id}")
     public ProjectResponse update(@PathVariable UUID id,
-                                  @RequestBody ProjectUpdateRequest request) {
+                                  @Valid @RequestBody ProjectUpdateRequest request) {
         return projectService.update(id, request);
     }
 

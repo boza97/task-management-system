@@ -2,6 +2,7 @@ package com.example.task_management_system.auth;
 
 import com.example.task_management_system.auth.dto.LoginRequest;
 import com.example.task_management_system.auth.dto.LoginResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         String token = authService.login(request);
         return ResponseEntity.ok(new LoginResponse(token));
     }

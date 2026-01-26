@@ -1,13 +1,14 @@
 package com.example.task_management_system.user.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-public class UserRegistrationRequest {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
+public record UserRegistrationRequest(
+        @NotBlank @Email String email,
+        @NotBlank @Size(min = 6, max = 100) String password,
+        @NotBlank @Size(max = 50) String firstName,
+        @NotBlank @Size(max = 50) String lastName
+) {
 }
+

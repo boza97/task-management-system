@@ -22,12 +22,12 @@ public class UserService {
     }
 
     public void register(UserRegistrationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
-        User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), hashedPassword);
+        String hashedPassword = passwordEncoder.encode(request.password());
+        User user = new User(request.firstName(), request.lastName(), request.email(), hashedPassword);
 
         userRepository.save(user);
     }
@@ -48,11 +48,11 @@ public class UserService {
 
     private User findUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                             .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     private Role findRole(String roleName) {
         return roleRepository.findByName(roleName)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+                             .orElseThrow(() -> new IllegalArgumentException("Role not found"));
     }
 }

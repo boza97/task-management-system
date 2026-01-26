@@ -5,6 +5,7 @@ import com.example.task_management_system.task.dto.ChangeStatusRequest;
 import com.example.task_management_system.task.dto.TaskCreateRequest;
 import com.example.task_management_system.task.dto.TaskResponse;
 import com.example.task_management_system.task.dto.TaskUpdateRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskResponse create(@RequestBody TaskCreateRequest request) {
+    public TaskResponse create(@Valid @RequestBody TaskCreateRequest request) {
         return taskService.create(request);
     }
 
@@ -46,12 +47,12 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public TaskResponse update(@PathVariable UUID id, @RequestBody TaskUpdateRequest request) {
+    public TaskResponse update(@PathVariable UUID id, @Valid @RequestBody TaskUpdateRequest request) {
         return taskService.update(id, request);
     }
 
     @PatchMapping("/{id}/status")
-    public TaskResponse changeStatus(@PathVariable UUID id, @RequestBody ChangeStatusRequest request) {
+    public TaskResponse changeStatus(@PathVariable UUID id, @Valid @RequestBody ChangeStatusRequest request) {
         return taskService.changeStatus(id, request);
     }
 
