@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "project_membership",
+@Table(name = "project_memberships",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"project_id", "user_id"})})
 @Getter
 @Setter

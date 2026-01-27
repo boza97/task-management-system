@@ -1,0 +1,69 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 001-seed-roles
+      author: bozidar
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: name, value: ADMIN }
+
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: name, value: USER }
+
+  - changeSet:
+      id: 002-seed-task-status
+      author: bozidar
+      changes:
+        - insert:
+            tableName: task_status
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: code, value: TODO }
+              - column: { name: name, value: "To Do" }
+              - column: { name: display_order, valueNumeric: 1 }
+
+        - insert:
+            tableName: task_status
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: code, value: IN_DEVELOPMENT }
+              - column: { name: name, value: "In Development" }
+              - column: { name: display_order, valueNumeric: 2 }
+
+        - insert:
+            tableName: task_status
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: code, value: READY_FOR_CODE_REVIEW }
+              - column: { name: name, value: "Ready for Code Review" }
+              - column: { name: display_order, valueNumeric: 3 }
+
+        - insert:
+            tableName: task_status
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: code, value: READY_FOR_QA }
+              - column: { name: name, value: "Ready for QA" }
+              - column: { name: display_order, valueNumeric: 4 }
+
+        - insert:
+            tableName: task_status
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: code, value: IN_QA }
+              - column: { name: name, value: "In QA" }
+              - column: { name: display_order, valueNumeric: 5 }
+
+        - insert:
+            tableName: task_status
+            columns:
+              - column: { name: id, valueComputed: gen_random_uuid() }
+              - column: { name: code, value: DONE }
+              - column: { name: name, value: "Done" }
+              - column: { name: display_order, valueNumeric: 6 }

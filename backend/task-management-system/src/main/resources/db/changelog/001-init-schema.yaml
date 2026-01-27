@@ -1,0 +1,558 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 000-enable-uuid-extension
+      author: bozidar
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            stripComments: true
+            sql: |
+              CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+  - changeSet:
+      id: 001-create-roles
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: 002-create-users
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: first_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            unique: true
+            columns:
+              - column:
+                  name: email
+
+  - changeSet:
+      id: 003-create-user-roles
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: user_id, role_id
+            constraintName: pk_user_roles
+
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_roles_user
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_user_roles_role
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: user_roles
+            indexName: idx_user_roles_role_id
+            columns:
+              - column:
+                  name: role_id
+
+  - changeSet:
+      id: 004-create-project
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: projects
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: project_key
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: varchar(1000)
+
+              - column:
+                  name: owner_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: projects
+            baseColumnNames: owner_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_project_owner
+            onDelete: RESTRICT
+
+        - createIndex:
+            tableName: projects
+            indexName: idx_project_owner_id
+            columns:
+              - column:
+                  name: owner_id
+
+  - changeSet:
+      id: 005-create-project-membership
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: project_memberships
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: project_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: joined_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: project_memberships
+            columnNames: project_id, user_id
+            constraintName: uk_project_memberships_project_user
+
+        - addForeignKeyConstraint:
+            baseTableName: project_memberships
+            baseColumnNames: project_id
+            referencedTableName: projects
+            referencedColumnNames: id
+            constraintName: fk_project_memberships_project
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: project_memberships
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_project_memberships_user
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: project_memberships
+            indexName: idx_project_memberships_user_id
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: 006-create-task-status
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: task_status
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: display_order
+                  type: int
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: task_status
+            indexName: idx_task_status_code
+            unique: true
+            columns:
+              - column:
+                  name: code
+
+  - changeSet:
+      id: 007-create-tasks
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: text
+
+              - column:
+                  name: priority
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: due_date
+                  type: date
+
+              - column:
+                  name: project_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_by_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: assignee_id
+                  type: uuid
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: tasks
+            baseColumnNames: project_id
+            referencedTableName: projects
+            referencedColumnNames: id
+            constraintName: fk_tasks_project
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: tasks
+            baseColumnNames: status_id
+            referencedTableName: task_status
+            referencedColumnNames: id
+            constraintName: fk_tasks_status
+            onDelete: RESTRICT
+
+        - addForeignKeyConstraint:
+            baseTableName: tasks
+            baseColumnNames: created_by_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_tasks_created_by
+            onDelete: RESTRICT
+
+        - addForeignKeyConstraint:
+            baseTableName: tasks
+            baseColumnNames: assignee_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_tasks_assignee
+            onDelete: SET NULL
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_project_id
+            columns:
+              - column:
+                  name: project_id
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_status_id
+            columns:
+              - column:
+                  name: status_id
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_assignee_id
+            columns:
+              - column:
+                  name: assignee_id
+
+  - changeSet:
+      id: 008-create-comments
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: comments
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: content
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: task_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: author_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: comments
+            baseColumnNames: task_id
+            referencedTableName: tasks
+            referencedColumnNames: id
+            constraintName: fk_comments_task
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: comments
+            baseColumnNames: author_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_comments_author
+            onDelete: RESTRICT
+
+        - createIndex:
+            tableName: comments
+            indexName: idx_comments_task_id
+            columns:
+              - column:
+                  name: task_id
+
+  - changeSet:
+      id: 009-create-audit-logs
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: audit_logs
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: action_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: timestamp
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: old_value
+                  type: text
+
+              - column:
+                  name: new_value
+                  type: text
+
+              - column:
+                  name: task_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: performed_by_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: audit_logs
+            baseColumnNames: task_id
+            referencedTableName: tasks
+            referencedColumnNames: id
+            constraintName: fk_audit_logs_task
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: audit_logs
+            baseColumnNames: performed_by_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_audit_logs_performed_by
+            onDelete: RESTRICT
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_logs_task_id
+            columns:
+              - column:
+                  name: task_id
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_logs_timestamp
+            columns:
+              - column:
+                  name: timestamp
