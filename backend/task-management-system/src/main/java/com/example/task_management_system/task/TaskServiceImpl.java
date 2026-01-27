@@ -95,30 +95,29 @@ public class TaskServiceImpl implements TaskService {
         Task task = getTaskOrThrow(taskId);
         User currentUser = currentUserProvider.getCurrentUser();
 
-        if (request.title() != null && !request.title().equals(task.getTitle())) {
+        if (!request.title().equals(task.getTitle())) {
             createAudit(task, currentUser, ActionType.TITLE_CHANGED, task.getTitle(), request.title());
             task.setTitle(request.title());
         }
 
-        if (request.description() != null && !Objects.equals(request.description(), task.getDescription())) {
+        if (!Objects.equals(request.description(), task.getDescription())) {
             createAudit(task, currentUser, ActionType.DESCRIPTION_CHANGED,
                         task.getDescription(), request.description());
             task.setDescription(request.description());
         }
 
-        if (request.dueDate() != null && !Objects.equals(request.dueDate(), task.getDueDate())) {
+        if (!Objects.equals(request.dueDate(), task.getDueDate())) {
             createAudit(task, currentUser, ActionType.DUE_DATE_CHANGED,
                         String.valueOf(task.getDueDate()), String.valueOf(request.dueDate()));
             task.setDueDate(request.dueDate());
         }
 
-        if (request.priority() != null && request.priority() != task.getPriority()) {
+        if (request.priority() != task.getPriority()) {
             createAudit(task, currentUser, ActionType.PRIORITY_CHANGED,
                         String.valueOf(task.getPriority()), String.valueOf(request.priority()));
             task.setPriority(request.priority());
         }
 
-//        taskRepository.save(task);
         return mapToResponse(task);
     }
 
@@ -139,7 +138,6 @@ public class TaskServiceImpl implements TaskService {
             task.setStatus(newStatus);
         }
 
-//        taskRepository.save(task);
         return mapToResponse(task);
     }
 
