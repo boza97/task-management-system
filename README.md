@@ -4,7 +4,7 @@
 
 Task Management System is a web application designed to support task tracking and workflow management within a software development team.  
 
-This project is developed as part of the \*Advanced Software Technologies\* course and is designed to be extensible for further academic work.
+This project is developed as part of the *Advanced Software Technologies* course and is designed to be extensible for further academic work.
 
 
 ---
@@ -78,6 +78,7 @@ TODO
 ## License
 
 Copyright © 2026 Božidar Mastilović
+
 
 
 
