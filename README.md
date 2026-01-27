@@ -43,15 +43,17 @@ TaskStatus – task statuses (e.g., TODO, IN_PROGRESS, DONE)
 
 ### Backend
 
-- Java
+- Java 21
 
-- Spring Boot
+- Spring Boot 4
 
 - Spring Data JPA
 
 - PostgreSQL
 
-- Maven
+- Spring Security (JWT Authentication)
+
+- OpenApi 3
 
 ---
 
@@ -72,6 +74,7 @@ TODO
 ## License
 
 Copyright © 2026 Božidar Mastilović
+
 
 
 
