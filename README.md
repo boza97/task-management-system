@@ -33,13 +33,22 @@ TaskStatus – task statuses (e.g., TODO, IN_PROGRESS, DONE)
 
 ![Class Diagram](doc/images/task-managment-uml-class.drawio.png)
 
+## Database (Docker)
 
+This project uses **PostgreSQL**. To start the database locally using Docker Compose:
 
-## Technologies
+```bash
+docker compose up -d
+```
+
+To stop and remove containers:
+```bash
+docker compose down
+```
 
 ---
 
-
+## Technologies
 
 ### Backend
 
@@ -55,15 +64,10 @@ TaskStatus – task statuses (e.g., TODO, IN_PROGRESS, DONE)
 
 - OpenApi 3
 
----
-
 
 ### Frontend
 
 TODO
-
----
-
 
 ### Testing
 
@@ -74,6 +78,7 @@ TODO
 ## License
 
 Copyright © 2026 Božidar Mastilović
+
 
 
 
