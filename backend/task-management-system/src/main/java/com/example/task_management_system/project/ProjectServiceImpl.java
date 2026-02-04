@@ -9,8 +9,8 @@ import com.example.task_management_system.project.membership.ProjectMembership;
 import com.example.task_management_system.project.membership.ProjectMembershipRepository;
 import com.example.task_management_system.project.membership.ProjectRole;
 import com.example.task_management_system.user.User;
-import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,21 +18,11 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMembershipRepository membershipRepository;
-    private final UserRepository userRepository;
     private final CurrentUserProvider currentUserProvider;
-
-    public ProjectServiceImpl(ProjectRepository projectRepository,
-                              ProjectMembershipRepository membershipRepository,
-                              UserRepository userRepository,
-                              CurrentUserProvider currentUserProvider) {
-        this.projectRepository = projectRepository;
-        this.membershipRepository = membershipRepository;
-        this.userRepository = userRepository;
-        this.currentUserProvider = currentUserProvider;
-    }
 
     @Override
     public ProjectResponse create(ProjectCreateRequest request) {

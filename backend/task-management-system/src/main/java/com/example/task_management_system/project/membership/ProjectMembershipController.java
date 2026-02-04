@@ -4,6 +4,7 @@ import com.example.task_management_system.project.membership.dto.AddMemberReques
 import com.example.task_management_system.project.membership.dto.ChangeMemberRoleRequest;
 import com.example.task_management_system.project.membership.dto.ProjectMemberResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +21,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/members")
+@RequiredArgsConstructor
 public class ProjectMembershipController {
 
     private final ProjectMembershipService membershipService;
-
-    public ProjectMembershipController(ProjectMembershipService membershipService) {
-        this.membershipService = membershipService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

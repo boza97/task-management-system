@@ -17,6 +17,7 @@ import com.example.task_management_system.task.status.TaskStatusRepository;
 import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
@@ -33,20 +35,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskStatusRepository taskStatusRepository;
     private final UserRepository userRepository;
     private final CurrentUserProvider currentUserProvider;
-
-    public TaskServiceImpl(TaskRepository taskRepository,
-                           AuditLogRepository auditLogRepository,
-                           ProjectRepository projectRepository,
-                           TaskStatusRepository taskStatusRepository,
-                           UserRepository userRepository,
-                           CurrentUserProvider currentUserProvider) {
-        this.taskRepository = taskRepository;
-        this.auditLogRepository = auditLogRepository;
-        this.projectRepository = projectRepository;
-        this.taskStatusRepository = taskStatusRepository;
-        this.userRepository = userRepository;
-        this.currentUserProvider = currentUserProvider;
-    }
 
     @Override
     public TaskResponse create(TaskCreateRequest request) {

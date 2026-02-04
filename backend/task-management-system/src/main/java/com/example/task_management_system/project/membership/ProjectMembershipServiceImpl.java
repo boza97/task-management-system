@@ -10,6 +10,7 @@ import com.example.task_management_system.project.membership.dto.ProjectMemberRe
 import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,22 +18,13 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ProjectMembershipServiceImpl implements ProjectMembershipService {
 
     private final ProjectMembershipRepository membershipRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final CurrentUserProvider currentUserProvider;
-
-    public ProjectMembershipServiceImpl(ProjectMembershipRepository membershipRepository,
-                                        ProjectRepository projectRepository,
-                                        UserRepository userRepository,
-                                        CurrentUserProvider currentUserProvider) {
-        this.membershipRepository = membershipRepository;
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-        this.currentUserProvider = currentUserProvider;
-    }
 
     @Override
     public ProjectMemberResponse addMember(UUID projectId, AddMemberRequest request) {

@@ -11,6 +11,7 @@ import com.example.task_management_system.task.comment.dto.CommentCreateRequest;
 import com.example.task_management_system.task.comment.dto.CommentResponse;
 import com.example.task_management_system.user.User;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,22 +19,13 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final TaskRepository taskRepository;
     private final AuditLogRepository auditLogRepository;
     private final CurrentUserProvider currentUserProvider;
-
-    public CommentServiceImpl(CommentRepository commentRepository,
-                              TaskRepository taskRepository,
-                              AuditLogRepository auditLogRepository,
-                              CurrentUserProvider currentUserProvider) {
-        this.commentRepository = commentRepository;
-        this.taskRepository = taskRepository;
-        this.auditLogRepository = auditLogRepository;
-        this.currentUserProvider = currentUserProvider;
-    }
 
     @Override
     public CommentResponse addComment(UUID taskId, CommentCreateRequest request) {
@@ -44,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
         User currentUser = currentUserProvider.getCurrentUser();
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+                                  .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
 
         Comment comment = new Comment();
         comment.setTask(task);
@@ -71,8 +63,8 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return commentRepository.findAllByTaskIdOrderByCreatedAtDesc(taskId).stream()
-                .map(this::mapToResponse)
-                .toList();
+                                .map(this::mapToResponse)
+                                .toList();
     }
 
     @Override
@@ -84,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+                                           .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
         if (!comment.getTask().getId().equals(taskId)) {
             throw new IllegalArgumentException("Comment does not belong to this task");
