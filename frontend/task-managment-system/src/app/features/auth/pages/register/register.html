@@ -1,7 +1,97 @@
-<div class="container mt-5 register-container">
-  <div class="card shadow-sm">
+<div class="container register-container">
+  <div class="card shadow-sm register-card">
     <div class="card-body">
-      <h4 class="mb-3">Register</h4>
+      <h3 class="text-center mb-4">Task Management System</h3>
+      <h5 class="text-center text-muted mb-4">Create account</h5>
+
+      <form [formGroup]="registerForm" (ngSubmit)="submit()">
+        <div class="mb-3">
+          <label class="form-label" for="firstName">First Name</label>
+          <input id="firstName" class="form-control" formControlName="firstName" />
+          @if (registerForm.controls.firstName.touched && registerForm.controls.firstName.invalid) {
+            <div class="invalid-feedback d-block">First name is required</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="lastName">Last Name</label>
+          <input id="lastName" class="form-control" formControlName="lastName" />
+          @if (registerForm.controls.lastName.touched && registerForm.controls.lastName.invalid) {
+            <div class="invalid-feedback d-block">Last name is required</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input id="email" type="email" class="form-control" formControlName="email" />
+          @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+            <div class="invalid-feedback d-block">
+              @if (registerForm.controls.email.errors?.['required']) {
+                Email is required
+              }
+              @if (registerForm.controls.email.errors?.['email']) {
+                Invalid email format
+              }
+            </div>
+          }
+          @if (registerForm.controls.email.errors?.['serverError']) {
+            <div class="invalid-feedback d-block">
+              {{ registerForm.controls.email.errors?.['serverError'] }}
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="password">Password</label>
+          <input id="password" type="password" class="form-control" formControlName="password" />
+          @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+            <div class="invalid-feedback d-block">
+              @if (registerForm.controls.password.errors?.['required']) {
+                Password is required
+              }
+              @if (registerForm.controls.password.errors?.['minlength']) {
+                Password must be at least 6 characters
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            class="form-control"
+            formControlName="confirmPassword"
+          />
+
+          @if (
+            registerForm.controls.confirmPassword.touched &&
+            registerForm.controls.confirmPassword.invalid
+          ) {
+            <div class="invalid-feedback d-block">Confirm password is required</div>
+          } @else if (
+            registerForm.errors?.['passwordMismatch'] &&
+            registerForm.controls.confirmPassword.touched
+          ) {
+            <div class="invalid-feedback d-block">Passwords do not match</div>
+          }
+        </div>
+
+        @if (registerForm.errors?.['serverError']) {
+          <div class="alert alert-danger mb-3">
+            {{ registerForm.errors?.['serverError'] }}
+          </div>
+        }
+
+        <button class="btn btn-primary w-100" type="submit" [disabled]="registerForm.invalid">
+          Register
+        </button>
+      </form>
+
+      <div class="text-center mt-4">
+        <a routerLink="/login"> Already have an account? Login </a>
+      </div>
     </div>
   </div>
 </div>

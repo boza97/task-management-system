@@ -1,8 +1,47 @@
-<div class="container mt-5 login-container">
-  <div class="card shadow-sm">
+<div class="container login-container">
+  <div class="card shadow-sm login-card">
     <div class="card-body">
-      <h4 class="mb-3">Login</h4>
-      <button class="btn btn-primary w-100">Test Login Button</button>
+      <h3 class="text-center mb-4">Task Management System</h3>
+      <h5 class="text-center text-muted mb-4">Sign in</h5>
+
+      <form [formGroup]="loginForm" (ngSubmit)="submit()">
+        <div class="mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input type="email" class="form-control" id="email" formControlName="email" />
+          @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+            <div class="invalid-feedback d-block">
+              @if (loginForm.controls.email.errors?.['required']) {
+                <span>Email is required</span>
+              }
+              @if (loginForm.controls.email.errors?.['email']) {
+                <span>Invalid email format</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" class="form-control" id="password" formControlName="password" />
+          @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+            <div class="invalid-feedback d-block">Password is required</div>
+          }
+        </div>
+
+        @if (loginForm.errors?.['serverError']) {
+          <div class="alert alert-danger">
+            {{ loginForm.errors?.['serverError'] }}
+          </div>
+        }
+
+        <button class="btn btn-primary w-100" type="submit" [disabled]="loginForm.invalid">
+          Sign in
+        </button>
+      </form>
+
+      <div class="text-center mt-4">
+        <a routerLink="/register"> Don't have an account? Register </a>
+      </div>
     </div>
   </div>
 </div>
