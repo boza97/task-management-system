@@ -1,5 +1,6 @@
 package com.example.task_management_system.user;
 
+import com.example.task_management_system.common.exception.EmailAlreadyExistsException;
 import com.example.task_management_system.user.dto.UserRegistrationRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserService {
 
     public void register(UserRegistrationRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new EmailAlreadyExistsException();
         }
 
         String hashedPassword = passwordEncoder.encode(request.password());

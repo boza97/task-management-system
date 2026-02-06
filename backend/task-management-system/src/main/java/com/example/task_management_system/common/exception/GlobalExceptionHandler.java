@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -18,6 +19,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .body(new ApiErrorResponse(404, ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleInvalidCredentials(InvalidCredentialsException ex) {
+
+        return Map.of(
+                "globalErrors", List.of(ex.getMessage())
+        );
+    }
+
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleEmailExists(EmailAlreadyExistsException ex) {
+
+        return Map.of(
+                "message", "Validation failed",
+                "errors", Map.of(
+                        "email", ex.getMessage()
+                )
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

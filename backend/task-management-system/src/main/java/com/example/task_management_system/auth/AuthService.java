@@ -1,6 +1,7 @@
 package com.example.task_management_system.auth;
 
 import com.example.task_management_system.auth.dto.LoginRequest;
+import com.example.task_management_system.common.exception.InvalidCredentialsException;
 import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,10 @@ public class AuthService {
 
     public String login(LoginRequest request) {
         User user = userRepository.findByEmailWithRoles(request.email())
-                                  .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+                                  .orElseThrow(InvalidCredentialsException::new);
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new InvalidCredentialsException();
         }
 
         return jwtService.generateToken(user);
