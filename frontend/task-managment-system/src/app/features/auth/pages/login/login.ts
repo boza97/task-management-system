@@ -6,6 +6,7 @@ import { TokenStorageService } from '../../../../shared/services/token-storage.s
 import { LoginRequest } from '../../data/models/login-request.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ApiErrorResponse } from '../../../../shared/models/api-error-response.model';
+import { SessionService } from '../../../../shared/services/session.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class Login {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly tokenStorage = inject(TokenStorageService);
+  private readonly sessionService = inject(SessionService);
 
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -49,6 +51,7 @@ export class Login {
       .subscribe({
         next: (response) => {
           this.tokenStorage.set(response.token);
+          this.sessionService.startSessionTimer(response.token);
           this.router.navigate(['/']);
         },
         error: (err) => this.handleLoginError(err),
