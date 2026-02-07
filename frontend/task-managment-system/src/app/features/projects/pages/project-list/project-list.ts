@@ -3,10 +3,11 @@ import { ProjectService } from '../../data/project.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-project-list',
-  imports: [DatePipe],
+  imports: [DatePipe, RouterLink],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss',
 })

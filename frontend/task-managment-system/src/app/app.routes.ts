@@ -16,8 +16,20 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        redirectTo: 'projects',
+        pathMatch: 'full',
+      },
+      {
+        path: 'projects',
         loadComponent: () =>
-          import('./features/projects/pages/proejct-list/project-list').then((m) => m.ProjectList),
+          import('./features/projects/pages/project-list/project-list').then((m) => m.ProjectList),
+      },
+      {
+        path: 'projects/:projectId',
+        loadComponent: () =>
+          import('./features/projects/pages/project-details/project-details').then(
+            (m) => m.ProjectDetails,
+          ),
       },
     ],
   },
