@@ -6,21 +6,23 @@ import { Router } from '@angular/router';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStorageService);
-  const token = tokenStorage.get();
   const router = inject(Router);
 
-  if (!token || req.url.endsWith('/auth/login') || req.url.endsWith('/users/register')) {
-    return next(req);
-  }
+  const token = tokenStorage.get();
+  let authReq = req;
+  const isAuthCall = req.url.endsWith('/auth/login') || req.url.endsWith('/users/register');
 
-  const authReq = req.clone({
-    headers: req.headers.set('Authorization', `Bearer ${token}`),
-  });
+  if (token && !isAuthCall) {
+    authReq = req.clone({
+      headers: req.headers.set('Authorization', `Bearer ${token}`),
+    });
+  }
 
   return next(authReq).pipe(
     catchError((err) => {
-      if (err.status === 401) {
+      if (err.status === 401 && !isAuthCall) {
         tokenStorage.clear();
+
         router.navigate(['/login'], {
           queryParams: { sessionExpired: true },
         });
