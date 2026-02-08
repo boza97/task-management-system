@@ -2,55 +2,49 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="mb-0">Projects</h3>
 
-    <button class="btn btn-primary btn-sm">New Project</button>
+    <button class="btn btn-primary btn-sm" routerLink="/projects/new">+ New Project</button>
   </div>
 
   @if (loading()) {
-    <div class="d-flex align-items-center gap-2 text-muted">
-      <div class="spinner-border spinner-border-sm"></div>
-      <span>Loading projects...</span>
-    </div>
-  }
+  <div class="d-flex align-items-center gap-2 text-muted">
+    <div class="spinner-border spinner-border-sm"></div>
+    <span>Loading projects...</span>
+  </div>
+  } @if (!loading() && error()) {
+  <div class="alert alert-danger">
+    {{ error() }}
+  </div>
+  } @if (!loading() && !error() && projects().length === 0) {
+  <div class="text-center text-muted py-5">
+    <div class="mb-2 fw-semibold">No projects yet</div>
+  </div>
+  } @if (!loading() && !error() && projects().length > 0) {
+  <div class="list-group shadow-sm">
+    @for (project of projects(); track project.id) {
+    <div
+      class="list-group-item cursor-pointer list-group-item-action"
+      [routerLink]="['/projects', project.id]"
+    >
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fw-semibold">{{ project.key }} — {{ project.name }}</div>
 
-  @if (!loading() && error()) {
-    <div class="alert alert-danger">
-      {{ error() }}
-    </div>
-  }
-
-  @if (!loading() && !error() && projects().length === 0) {
-    <div class="text-center text-muted py-5">
-      <div class="mb-2 fw-semibold">No projects yet</div>
-    </div>
-  }
-
-  @if (!loading() && !error() && projects().length > 0) {
-    <div class="list-group shadow-sm">
-      @for (project of projects(); track project.id) {
-        <div
-          class="list-group-item cursor-pointer list-group-item-action"
-          [routerLink]="['/projects', project.id]"
-        >
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <div class="fw-semibold">{{ project.key }} — {{ project.name }}</div>
-
-              @if (project.description) {
-                <div class="project-description text-muted small mt-1">
-                  {{ project.description }}
-                </div>
-              }
-
-              <div class="text-muted small mt-2">Owner: {{ project.ownerFullName }}</div>
-            </div>
-
-            <div class="text-muted small text-end">
-              <div>Created</div>
-              <div>{{ project.createdAt | date: 'short' }}</div>
-            </div>
+          @if (project.description) {
+          <div class="project-description text-muted small mt-1">
+            {{ project.description }}
           </div>
+          }
+
+          <div class="text-muted small mt-2">Owner: {{ project.ownerFullName }}</div>
         </div>
-      }
+
+        <div class="text-muted small text-end">
+          <div>Created</div>
+          <div>{{ project.createdAt | date : 'short' }}</div>
+        </div>
+      </div>
     </div>
+    }
+  </div>
   }
 </div>

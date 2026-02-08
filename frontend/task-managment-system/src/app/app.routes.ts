@@ -25,10 +25,17 @@ export const routes: Routes = [
           import('./features/projects/pages/project-list/project-list').then((m) => m.ProjectList),
       },
       {
+        path: 'projects/new',
+        loadComponent: () =>
+          import('./features/projects/pages/project-create/project-create').then(
+            (m) => m.ProjectCreate
+          ),
+      },
+      {
         path: 'projects/:projectId',
         loadComponent: () =>
           import('./features/projects/pages/project-details/project-details').then(
-            (m) => m.ProjectDetails,
+            (m) => m.ProjectDetails
           ),
       },
     ],
