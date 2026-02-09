@@ -2,33 +2,34 @@
   <h3 class="mb-4">Create Project</h3>
 
   @if (error()) {
-  <div class="alert alert-danger">
-    {{ error() }}
-  </div>
+    <div class="alert alert-danger">
+      {{ error() }}
+    </div>
   }
 
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="mb-3">
-      <label class="form-label">Project Key</label>
-      <input class="form-control" formControlName="key" maxlength="20" />
+      <label class="form-label" for="key">Project Key</label>
+      <input id="key" class="form-control" formControlName="key" maxlength="20" />
 
       @if (form.controls.key.touched && form.controls.key.invalid) {
-      <div class="text-danger small">Key is required (max 10 chars)</div>
+        <div class="text-danger small">Key is required (max 10 chars)</div>
       }
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Project Name</label>
-      <input class="form-control" formControlName="name" maxlength="100" />
+      <label class="form-label" for="name">Project Name</label>
+      <input id="name" class="form-control" formControlName="name" maxlength="100" />
 
       @if (form.controls.name.touched && form.controls.name.invalid) {
-      <div class="text-danger small">Name is required</div>
+        <div class="text-danger small">Name is required</div>
       }
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Description</label>
+      <label class="form-label" for="description">Description</label>
       <textarea
+        id="description"
         class="form-control"
         rows="3"
         formControlName="description"
@@ -37,7 +38,11 @@
     </div>
 
     <button class="btn btn-primary" type="submit" [disabled]="submitting()">
-      @if (!submitting()) { Create Project } @else { Creating... }
+      @if (!submitting()) {
+        Create Project
+      } @else {
+        Creating...
+      }
     </button>
   </form>
 </div>
