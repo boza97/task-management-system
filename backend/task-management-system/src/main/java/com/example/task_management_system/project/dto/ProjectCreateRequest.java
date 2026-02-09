@@ -7,18 +7,18 @@ import jakarta.validation.constraints.Size;
 @Schema(name = "ProjectCreateRequest", description = "Payload for creating a new project")
 public record ProjectCreateRequest(
 
-        @Schema(example = "TMS", description = "Unique project key (max 10 chars). Usually uppercase.")
+        @Schema(example = "TMS", description = "Unique project key (max 10 chars). Usually uppercase.", maxLength = 10)
         @NotBlank
-        @Size(max = 20)
+        @Size(max = 10)
         String key,
 
-        @Schema(example = "Task Management System", description = "Project name")
+        @Schema(example = "Task Management System", description = "Project name", maxLength = 100)
         @NotBlank
         @Size(max = 100)
         String name,
 
-        @Schema(example = "Task management system built with Spring Boot and Angular", description = "Project description")
-        @Size(max = 500)
+        @Schema(example = "Task management system built with Spring Boot and Angular", description = "Project description", maxLength = 1000)
+        @Size(max = 1000)
         String description
 ) {
 }
