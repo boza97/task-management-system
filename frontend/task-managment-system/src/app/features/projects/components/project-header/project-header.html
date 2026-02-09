@@ -1,0 +1,26 @@
+<div class="mb-2">
+  <button class="btn btn-link px-0 text-decoration-none" (click)="goBack()">← Projects</button>
+</div>
+
+@if (loading()) {
+  <div class="text-muted small">Loading project...</div>
+}
+
+@if (!loading() && error()) {
+  <div class="alert alert-danger">
+    {{ error() }}
+  </div>
+}
+
+@if (!loading() && project()) {
+  <div>
+    <h3 class="mb-1">{{ project()!.key }} — {{ project()!.name }}</h3>
+
+    <div class="text-muted small">Owner: {{ project()!.ownerFullName }}</div>
+
+    <div class="text-muted small">
+      Created:
+      {{ project()!.createdAt | date: 'medium' }}
+    </div>
+  </div>
+}

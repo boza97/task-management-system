@@ -28,15 +28,34 @@ export const routes: Routes = [
         path: 'projects/new',
         loadComponent: () =>
           import('./features/projects/pages/project-create/project-create').then(
-            (m) => m.ProjectCreate
+            (m) => m.ProjectCreate,
           ),
       },
       {
         path: 'projects/:projectId',
         loadComponent: () =>
-          import('./features/projects/pages/project-details/project-details').then(
-            (m) => m.ProjectDetails
+          import('./features/projects/pages/project-shell/project-shell').then(
+            (m) => m.ProjectShell,
           ),
+        children: [
+          {
+            path: '',
+            redirectTo: 'overview',
+            pathMatch: 'full',
+          },
+          {
+            path: 'overview',
+            loadComponent: () =>
+              import('./features/projects/pages/project-details/project-details').then(
+                (m) => m.ProjectDetails,
+              ),
+          },
+          {
+            path: 'tasks',
+            loadComponent: () =>
+              import('./features/tasks/pages/task-list/task-list').then((m) => m.TaskList),
+          },
+        ],
       },
     ],
   },
