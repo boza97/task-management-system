@@ -1,4 +1,8 @@
-<div class="container mt-4">
+<div class="mb-3">
+  <button class="btn btn-sm btn-outline-secondary" routerLink="/projects">← Projects</button>
+</div>
+
+<div class="container mt-3">
   <h3 class="mb-4">Create Project</h3>
 
   @if (error()) {
@@ -37,7 +41,7 @@
       ></textarea>
     </div>
 
-    <button class="btn btn-primary" type="submit" [disabled]="submitting()">
+    <button class="btn btn-primary" type="submit" [disabled]="submitting() || form.invalid">
       @if (!submitting()) {
         Create Project
       } @else {

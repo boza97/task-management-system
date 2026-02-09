@@ -1,13 +1,13 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ProjectService } from '../../data/project.service';
 import { CreateProjectRequest } from '../../data/models/project-create-request.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-project-create',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './project-create.html',
   styleUrl: './project-create.scss',
 })
@@ -26,6 +26,12 @@ export class ProjectCreate {
     description: ['', [Validators.maxLength(1000)]],
   });
 
+  constructor() {
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => (this.error() ? this.error.set(null) : null));
+  }
+
   submit() {
     if (this.form.invalid) {
       return;
@@ -40,8 +46,8 @@ export class ProjectCreate {
       .createProject(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          this.router.navigate(['/projects']);
+        next: (project) => {
+          this.router.navigate(['/projects', project.id]);
         },
         error: () => {
           this.error.set('Failed to create project');
