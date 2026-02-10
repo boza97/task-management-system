@@ -1,1 +1,59 @@
-<h4>task-list works!</h4>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Tasks</h4>
+
+  <button class="btn btn-primary btn-sm" routerLink="../tasks/new">+ New Task</button>
+</div>
+
+@if (loading()) {
+  <div class="text-muted">Loading tasks...</div>
+}
+
+@if (!loading() && error()) {
+  <div class="alert alert-danger">
+    {{ error() }}
+  </div>
+}
+
+@if (!loading() && !error()) {
+  @if (tasks().length === 0) {
+    <div class="text-muted">No tasks yet</div>
+  } @else {
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (task of tasks(); track task.id) {
+          <tr>
+            <td>{{ task.title }}</td>
+
+            <td>
+              <span class="badge bg-secondary">
+                {{ task.statusLabel }}
+              </span>
+            </td>
+
+            <td>{{ task.priority }}</td>
+
+            <td>
+              @if (task.dueDate) {
+                {{ task.dueDate | date: 'mediumDate' }}
+              } @else {
+                -
+              }
+            </td>
+
+            <td>{{ task.updatedAt | date: 'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}
