@@ -60,6 +60,13 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/tasks/pages/task-create/task-create').then((m) => m.TaskCreate),
           },
+          {
+            path: 'members',
+            loadComponent: () =>
+              import('./features/projects/pages/project-members/project-members').then(
+                (m) => m.ProjectMembers,
+              ),
+          },
         ],
       },
     ],
