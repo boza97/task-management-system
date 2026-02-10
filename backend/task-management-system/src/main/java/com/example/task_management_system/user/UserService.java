@@ -2,11 +2,13 @@ package com.example.task_management_system.user;
 
 import com.example.task_management_system.common.exception.EmailAlreadyExistsException;
 import com.example.task_management_system.user.dto.UserRegistrationRequest;
+import com.example.task_management_system.user.dto.UserResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,6 +19,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                             .map(user -> new UserResponse(user.getId(), user.getEmail(), user.getFirstName(),
+                                                           user.getLastName())).toList();
+    }
 
     public void register(UserRegistrationRequest request) {
         if (userRepository.existsByEmail(request.email())) {

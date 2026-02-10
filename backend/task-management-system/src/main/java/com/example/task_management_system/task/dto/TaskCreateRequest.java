@@ -32,9 +32,9 @@ public record TaskCreateRequest(
         @Schema(
                 description = "Task description (optional)",
                 example = "Task description content",
-                maxLength = 500
+                maxLength = 5000
         )
-        @Size(max = 500)
+        @Size(max = 5000)
         String description,
 
         @Schema(
