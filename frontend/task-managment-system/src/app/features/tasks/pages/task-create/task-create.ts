@@ -1,9 +1,14 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from '../../data/task.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CreateTaskRequest, TaskPriority } from '../../data/models/create-task-request.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Store } from '@ngrx/store';
+import { selectProject } from '../../../projects/data/store/project.selectors';
+import { filter, map } from 'rxjs';
+import { ProjectMembersService } from '../../../projects/data/project-members.service';
+import { ProjectMember } from '../../../projects/data/models/project-member.model';
 
 @Component({
   selector: 'app-task-create',
@@ -13,12 +18,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class TaskCreate {
   private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
   private readonly taskService = inject(TaskService);
+  private readonly membersService = inject(ProjectMembersService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
-
-  private readonly projectId = this.route.parent?.snapshot.paramMap.get('projectId')!;
 
   taskPriorityEnum = TaskPriority;
   form = this.fb.nonNullable.group({
@@ -26,8 +31,25 @@ export class TaskCreate {
     description: [''],
     priority: [TaskPriority.MEDIUM, [Validators.required]],
     dueDate: [''],
+    assigneeId: [null as string | null],
   });
+  projectId = toSignal(
+    this.store.select(selectProject).pipe(
+      filter((p) => !!p),
+      map((p) => p.id),
+    ),
+  );
   loading = signal(false);
+  members = signal<ProjectMember[]>([]);
+
+  constructor() {
+    effect(() => {
+      const projectId = this.projectId();
+      if (projectId) {
+        this.loadMembers(projectId);
+      }
+    });
+  }
 
   submit() {
     if (this.form.invalid) {
@@ -38,7 +60,7 @@ export class TaskCreate {
 
     const request: CreateTaskRequest = {
       ...this.form.getRawValue(),
-      projectId: this.projectId,
+      projectId: this.projectId()!,
       dueDate: this.form.value.dueDate || null,
     };
 
@@ -51,6 +73,17 @@ export class TaskCreate {
         },
         error: () => {
           this.loading.set(false);
+        },
+      });
+  }
+
+  private loadMembers(projectId: string) {
+    this.membersService
+      .listMembers(projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (list) => {
+          this.members.set(list);
         },
       });
   }

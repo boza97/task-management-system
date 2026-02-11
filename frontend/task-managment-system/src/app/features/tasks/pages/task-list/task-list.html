@@ -26,6 +26,7 @@
           <th>Priority</th>
           <th>Due Date</th>
           <th>Updated</th>
+          <th>Assignee</th>
         </tr>
       </thead>
 
@@ -51,6 +52,14 @@
             </td>
 
             <td>{{ task.updatedAt | date: 'short' }}</td>
+
+            <td>
+              @if (task.assigneeFullName) {
+                {{ task.assigneeFullName }}
+              } @else {
+                <span class="text-muted">Unassigned</span>
+              }
+            </td>
           </tr>
         }
       </tbody>

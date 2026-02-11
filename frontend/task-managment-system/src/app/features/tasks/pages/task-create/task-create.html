@@ -25,9 +25,21 @@
     </select>
   </div>
 
-  <div class="mb-3">
+  <div class="mb-3 width-200-px">
     <label for="dueDate" class="form-label">Due Date</label>
     <input id="dueDate" type="date" class="form-control" formControlName="dueDate" />
+  </div>
+
+  <div class="mb-3 width-500-px">
+    <label class="form-label" for="assignee"> Assignee </label>
+
+    <select id="assignee" class="form-select" formControlName="assigneeId">
+      <option [ngValue]="null">Unassigned</option>
+
+      @for (m of members(); track m.userId) {
+        <option [value]="m.userId">{{ m.firstName }} {{ m.lastName }} ({{ m.role }})</option>
+      }
+    </select>
   </div>
 
   <button class="btn btn-primary" [disabled]="loading() || form.invalid">Create Task</button>

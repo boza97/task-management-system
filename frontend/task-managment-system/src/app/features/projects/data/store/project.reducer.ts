@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import * as ProjectActions from './project.actions';
 import { Project } from '../models/project.model';
+import { updateProjectSuccess } from './project.actions';
 
 export interface ProjectState {
   project: Project | null;
@@ -32,5 +33,9 @@ export const projectReducer = createReducer(
     ...state,
     loading: false,
     error,
+  })),
+  on(updateProjectSuccess, (state, { project }) => ({
+    ...state,
+    project,
   })),
 );

@@ -12,19 +12,64 @@
   @if (!loading() && project()) {
     <div class="card shadow-sm">
       <div class="card-body">
-        <div class="mb-3">
-          <h4 class="mb-1">{{ project()!.key }} — {{ project()!.name }}</h4>
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h4 class="mb-1">
+              {{ project()!.key }} —
+              @if (!editMode()) {
+                {{ project()!.name }}
+              }
+            </h4>
 
-          <div class="text-muted small">Owner: {{ project()!.ownerFullName }}</div>
+            <div class="text-muted small">Owner: {{ project()!.ownerFullName }}</div>
+          </div>
+
+          @if (!editMode()) {
+            <button class="btn btn-sm btn-outline-primary" (click)="editMode.set(true)">
+              Edit
+            </button>
+          }
         </div>
 
-        @if (project()!.description) {
-          <div class="mb-3">
-            {{ project()!.description }}
-          </div>
+        @if (!editMode()) {
+          @if (project()!.description) {
+            <div class="mb-3">
+              {{ project()!.description }}
+            </div>
+          }
         }
 
-        <div class="text-muted small">Created: {{ project()!.createdAt | date: 'medium' }}</div>
+        @if (editMode()) {
+          <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="mb-3">
+              <label for="project-name" class="form-label">Project Name</label>
+              <input id="project-name" class="form-control" formControlName="name" />
+            </div>
+
+            <div class="mb-3">
+              <label for="project-description" class="form-label">Description</label>
+              <textarea
+                id="project-description"
+                class="form-control"
+                rows="5"
+                formControlName="description"
+              >
+              </textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Save</button>
+
+              <button class="btn btn-outline-secondary" type="button" (click)="cancelEdit()">
+                Cancel
+              </button>
+            </div>
+          </form>
+        }
+
+        <div class="text-muted small mt-3">
+          Created: {{ project()!.createdAt | date: 'medium' }}
+        </div>
       </div>
     </div>
   }

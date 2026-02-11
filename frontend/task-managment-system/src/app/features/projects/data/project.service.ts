@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Project } from './models/project.model';
 import { environment } from '../../../../environments/environment';
 import { CreateProjectRequest } from './models/project-create-request.model';
+import { ProjectUpdateRequest } from './models/project-update-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,5 +21,9 @@ export class ProjectService {
 
   createProject(data: CreateProjectRequest) {
     return this.http.post<Project>(`${environment.apiUrl}/projects`, data);
+  }
+
+  updateProject(projectId: string, data: ProjectUpdateRequest) {
+    return this.http.patch<Project>(`${environment.apiUrl}/projects/${projectId}`, data);
   }
 }

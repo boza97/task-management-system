@@ -1,8 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import * as ProjectActions from './project.actions';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { ProjectService } from '../project.service';
+import {
+  loadProject,
+  loadProjectFailure,
+  loadProjectSuccess,
+  updateProject,
+  updateProjectFailure,
+  updateProjectSuccess,
+} from './project.actions';
 
 @Injectable()
 export class ProjectEffects {
@@ -11,17 +18,29 @@ export class ProjectEffects {
 
   loadProject$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(ProjectActions.loadProject),
+      ofType(loadProject),
       switchMap(({ projectId }) =>
         this.projectService.getProjectById(projectId).pipe(
-          map((project) => ProjectActions.loadProjectSuccess({ project })),
+          map((project) => loadProjectSuccess({ project })),
           catchError(() =>
             of(
-              ProjectActions.loadProjectFailure({
+              loadProjectFailure({
                 error: 'Failed to load project',
               }),
             ),
           ),
+        ),
+      ),
+    ),
+  );
+
+  updateProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateProject),
+      switchMap(({ projectId, data }) =>
+        this.projectService.updateProject(projectId, data).pipe(
+          map((project) => updateProjectSuccess({ project })),
+          catchError((error) => of(updateProjectFailure({ error }))),
         ),
       ),
     ),
