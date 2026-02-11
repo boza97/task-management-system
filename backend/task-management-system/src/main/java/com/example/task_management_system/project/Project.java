@@ -83,17 +83,19 @@ public class Project {
         this.updatedAt = Instant.now();
     }
 
-    public boolean canBeUpdatedBy(User user) {
+    public boolean isOwner(User user) {
+        return owner.getId().equals(user.getId());
+    }
 
-        if (this.owner.getId().equals(user.getId())) {
-            return true;
-        }
-
+    public boolean hasRole(User user, ProjectRole role) {
         return memberships.stream()
                           .anyMatch(m ->
-                                            m.getUser().getId().equals(user.getId())
-                                            && m.getRole() == ProjectRole.PROJECT_MANAGER
+                                            m.getUser().getId().equals(user.getId()) &&
+                                            m.getRole() == role
                           );
     }
 
+    public boolean canBeUpdatedBy(User user) {
+        return isOwner(user) || hasRole(user, ProjectRole.PROJECT_MANAGER);
+    }
 }

@@ -11,6 +11,7 @@ import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,13 +32,15 @@ public class ProjectMembershipServiceImpl implements ProjectMembershipService {
         Project project = getProjectOrThrow(projectId);
         User currentUser = currentUserProvider.getCurrentUser();
 
-        requireOwner(project, currentUser);
+        if (!project.canBeUpdatedBy(currentUser)) {
+            throw new AccessDeniedException("Not allowed to add members");
+        }
 
         User member = userRepository.findById(request.userId())
                                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (membershipRepository.existsByProjectIdAndUserId(projectId, member.getId())) {
-            throw new IllegalArgumentException("User is already a member of this project");
+            throw new IllegalArgumentException("User is already a member");
         }
 
         ProjectMembership membership = new ProjectMembership();
@@ -64,7 +67,9 @@ public class ProjectMembershipServiceImpl implements ProjectMembershipService {
         Project project = getProjectOrThrow(projectId);
         User currentUser = currentUserProvider.getCurrentUser();
 
-        requireOwner(project, currentUser);
+        if (!project.isOwner(currentUser)) {
+            throw new AccessDeniedException("Only owner can change roles");
+        }
 
         ProjectMembership membership = membershipRepository.findByProjectIdAndUserId(projectId, userId)
                                                            .orElseThrow(() -> new ResourceNotFoundException(
@@ -81,7 +86,13 @@ public class ProjectMembershipServiceImpl implements ProjectMembershipService {
         Project project = getProjectOrThrow(projectId);
         User currentUser = currentUserProvider.getCurrentUser();
 
-        requireOwner(project, currentUser);
+        if (!project.canBeUpdatedBy(currentUser)) {
+            throw new AccessDeniedException("Not allowed to remove members");
+        }
+
+        if (project.getOwner().getId().equals(userId)) {
+            throw new IllegalArgumentException("Cannot remove project owner");
+        }
 
         membershipRepository.deleteByProjectIdAndUserId(projectId, userId);
     }
@@ -89,12 +100,6 @@ public class ProjectMembershipServiceImpl implements ProjectMembershipService {
     private Project getProjectOrThrow(UUID projectId) {
         return projectRepository.findById(projectId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
-    }
-
-    private void requireOwner(Project project, User user) {
-        if (!project.getOwner().getId().equals(user.getId())) {
-            throw new SecurityException("Only project owner can manage members");
-        }
     }
 
     private ProjectMemberResponse mapToResponse(ProjectMembership membership) {

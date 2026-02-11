@@ -99,7 +99,7 @@ public class ProjectServiceImpl implements ProjectService {
         boolean isAdmin = currentUser.hasRole("ADMIN");
 
         if (!isOwner && !isAdmin) {
-            throw new SecurityException("Only owner or admin can delete project");
+            throw new AccessDeniedException("Only owner or admin can delete project");
         }
 
         projectRepository.delete(project);
