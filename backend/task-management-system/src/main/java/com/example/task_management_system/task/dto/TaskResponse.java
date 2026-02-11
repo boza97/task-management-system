@@ -39,6 +39,9 @@ public record TaskResponse(
         @Schema(example = "d43376db-aca0-4db7-a1be-25fae98951f9")
         UUID assigneeId,
 
+        @Schema(example = "Bozidar Mastilovic")
+        String assigneeFullName,
+
         @Schema(example = "2026-01-27T00:40:34.932Z")
         Instant createdAt,
 

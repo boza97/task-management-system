@@ -12,8 +12,8 @@ public record ProjectUpdateRequest(
         @Size(max = 100)
         String name,
 
-        @Schema(example = "Updated description", description = "Updated project description")
-        @Size(max = 500)
+        @Schema(example = "Updated description", description = "Updated project description", maxLength = 1000)
+        @Size(max = 1000)
         String description
 ) {
 }
