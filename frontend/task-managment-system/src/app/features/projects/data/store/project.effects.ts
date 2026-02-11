@@ -3,6 +3,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import {
+  deleteProject,
+  deleteProjectFailure,
+  deleteProjectSuccess,
   loadProject,
   loadProjectFailure,
   loadProjectSuccess,
@@ -11,12 +14,14 @@ import {
   updateProjectSuccess,
 } from './project.actions';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ProjectEffects {
   private readonly actions$ = inject(Actions);
   private readonly projectService = inject(ProjectService);
   private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
   loadProject$ = createEffect(() =>
     this.actions$.pipe(
@@ -54,6 +59,30 @@ export class ProjectEffects {
         ofType(updateProjectSuccess),
         tap(() => {
           this.toastService.show('Project updated successfully', 'success');
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  deleteProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteProject),
+      switchMap(({ projectId }) =>
+        this.projectService.delete(projectId).pipe(
+          map(() => deleteProjectSuccess()),
+          catchError((error) => of(deleteProjectFailure({ error }))),
+        ),
+      ),
+    ),
+  );
+
+  deleteProjectSuccessToast$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(deleteProjectSuccess),
+        tap(() => {
+          this.toastService.show('Project deleted successfully', 'success');
+          this.router.navigate(['/projects']);
         }),
       ),
     { dispatch: false },

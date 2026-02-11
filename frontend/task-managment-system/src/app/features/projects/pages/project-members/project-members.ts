@@ -8,6 +8,7 @@ import { User } from '../../../../shared/models/user.model';
 import { Store } from '@ngrx/store';
 import { selectProject } from '../../data/store/project.selectors';
 import { distinctUntilChanged } from 'rxjs';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-project-members',
@@ -20,6 +21,7 @@ export class ProjectMembers implements OnInit {
   private readonly membersService = inject(ProjectMembersService);
   private readonly userService = inject(UserService);
   private readonly fb = inject(FormBuilder);
+  private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   projectRoleEnum = ProjectRole;
@@ -84,6 +86,27 @@ export class ProjectMembers implements OnInit {
       .subscribe({
         next: () => {
           this.members.update((prev) => prev.filter((m) => m.userId !== userId));
+        },
+      });
+  }
+
+  changeRole(userId: string, role: ProjectRole) {
+    const currentRole = this.members().find((m) => m.userId === userId)?.role;
+
+    this.members.update((list) => list.map((m) => (m.userId === userId ? { ...m, role } : m)));
+
+    this.membersService
+      .changeRole(this.project()!.id, userId, role)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          this.members.update((list) => list.map((m) => (m.userId === userId ? updated : m)));
+          this.toastService.show('Role updated successfully', 'success');
+        },
+        error: () => {
+          this.members.update((list) =>
+            list.map((m) => (m.userId === userId ? { ...m, role: currentRole! } : m)),
+          );
         },
       });
   }

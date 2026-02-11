@@ -25,9 +25,14 @@
           </div>
 
           @if (!editMode()) {
-            <button class="btn btn-sm btn-outline-primary" (click)="editMode.set(true)">
-              Edit
-            </button>
+            <div>
+              <button class="btn btn-sm btn-outline-danger me-2" (click)="deleteProject()">
+                Delete
+              </button>
+              <button class="btn btn-sm btn-outline-primary" (click)="editMode.set(true)">
+                Edit
+              </button>
+            </div>
           }
         </div>
 

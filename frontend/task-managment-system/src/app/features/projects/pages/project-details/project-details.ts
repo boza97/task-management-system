@@ -8,7 +8,7 @@ import {
   selectProjectLoading,
 } from '../../data/store/project.selectors';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { updateProject } from '../../data/store/project.actions';
+import { deleteProject, updateProject } from '../../data/store/project.actions';
 
 @Component({
   selector: 'app-project-details',
@@ -73,5 +73,18 @@ export class ProjectDetails {
     });
 
     this.editMode.set(false);
+  }
+
+  deleteProject() {
+    const project = this.project();
+    if (!project) {
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this project?')) {
+      return;
+    }
+
+    this.store.dispatch(deleteProject({ projectId: project.id }));
   }
 }

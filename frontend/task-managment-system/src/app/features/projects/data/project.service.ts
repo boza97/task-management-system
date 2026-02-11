@@ -26,4 +26,8 @@ export class ProjectService {
   updateProject(projectId: string, data: ProjectUpdateRequest) {
     return this.http.patch<Project>(`${environment.apiUrl}/projects/${projectId}`, data);
   }
+
+  delete(projectId: string) {
+    return this.http.delete(`${environment.apiUrl}/projects/${projectId}`);
+  }
 }
