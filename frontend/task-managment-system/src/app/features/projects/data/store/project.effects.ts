@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import {
   loadProject,
@@ -10,11 +10,13 @@ import {
   updateProjectFailure,
   updateProjectSuccess,
 } from './project.actions';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 @Injectable()
 export class ProjectEffects {
   private readonly actions$ = inject(Actions);
   private readonly projectService = inject(ProjectService);
+  private readonly toastService = inject(ToastService);
 
   loadProject$ = createEffect(() =>
     this.actions$.pipe(
@@ -44,5 +46,16 @@ export class ProjectEffects {
         ),
       ),
     ),
+  );
+
+  updateProjectSuccessToast$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(updateProjectSuccess),
+        tap(() => {
+          this.toastService.show('Project updated successfully', 'success');
+        }),
+      ),
+    { dispatch: false },
   );
 }

@@ -3,10 +3,12 @@ import { TokenStorageService } from '../services/token-storage.service';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { ToastService } from '../services/toast.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStorageService);
   const router = inject(Router);
+  const toastService = inject(ToastService);
 
   const token = tokenStorage.get();
   let authReq = req;
@@ -26,6 +28,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         router.navigate(['/login'], {
           queryParams: { sessionExpired: true },
         });
+      }
+
+      if (err.status === 403) {
+        toastService.show("You don't have permission", 'error');
       }
 
       return throwError(() => err);
