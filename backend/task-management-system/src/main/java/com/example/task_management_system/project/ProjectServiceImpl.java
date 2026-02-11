@@ -11,6 +11,7 @@ import com.example.task_management_system.project.membership.ProjectRole;
 import com.example.task_management_system.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,9 +79,9 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponse update(UUID projectId, ProjectUpdateRequest request) {
         Project project = getProjectOrThrow(projectId);
         User currentUser = currentUserProvider.getCurrentUser();
-
-        if (!project.getOwner().getId().equals(currentUser.getId())) {
-            throw new SecurityException("Only project owner can update project");
+        System.out.println("can be updated " + project.canBeUpdatedBy(currentUser));
+        if (!project.canBeUpdatedBy(currentUser)) {
+            throw new AccessDeniedException("You are not allowed to update this project");
         }
 
         project.setName(request.name());

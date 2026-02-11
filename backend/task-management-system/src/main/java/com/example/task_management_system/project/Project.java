@@ -1,6 +1,7 @@
 package com.example.task_management_system.project;
 
 import com.example.task_management_system.project.membership.ProjectMembership;
+import com.example.task_management_system.project.membership.ProjectRole;
 import com.example.task_management_system.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -81,4 +82,18 @@ public class Project {
     void onUpdate() {
         this.updatedAt = Instant.now();
     }
+
+    public boolean canBeUpdatedBy(User user) {
+
+        if (this.owner.getId().equals(user.getId())) {
+            return true;
+        }
+
+        return memberships.stream()
+                          .anyMatch(m ->
+                                            m.getUser().getId().equals(user.getId())
+                                            && m.getRole() == ProjectRole.PROJECT_MANAGER
+                          );
+    }
+
 }

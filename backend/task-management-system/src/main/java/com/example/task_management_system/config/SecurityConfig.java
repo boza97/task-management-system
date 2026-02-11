@@ -26,7 +26,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                        .accessDeniedHandler(((request, response, accessDeniedException) ->
+                                response.setStatus(HttpStatus.FORBIDDEN.value()))))
                 .authorizeHttpRequests(
                         auth -> auth.requestMatchers(
                                             "/api/users/register",
