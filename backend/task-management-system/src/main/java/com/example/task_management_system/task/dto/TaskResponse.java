@@ -36,6 +36,9 @@ public record TaskResponse(
         @Schema(example = "96cd0fbb-6bee-42ed-be77-e9cf64d6215b")
         UUID createdById,
 
+        @Schema(example = "Marko Markovic")
+        String createdByFullName,
+
         @Schema(example = "d43376db-aca0-4db7-a1be-25fae98951f9")
         UUID assigneeId,
 

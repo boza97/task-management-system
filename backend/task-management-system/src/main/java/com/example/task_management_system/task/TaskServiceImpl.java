@@ -189,6 +189,7 @@ public class TaskServiceImpl implements TaskService {
                 task.getStatus().getName(),
                 task.getProject().getId(),
                 task.getCreatedBy().getId(),
+                task.getCreatedBy().getFirstName() + " " + task.getCreatedBy().getLastName(),
                 task.getAssignee() != null ? task.getAssignee().getId() : null,
                 task.getAssignee() != null ?
                         task.getAssignee().getFirstName() + " " + task.getAssignee().getLastName() : null,
