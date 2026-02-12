@@ -15,4 +15,8 @@ export class TaskService {
   createTask(request: CreateTaskRequest) {
     return this.http.post<Task>(`${environment.apiUrl}/tasks`, request);
   }
+
+  getTask(taskId: string) {
+    return this.http.get<Task>(`${environment.apiUrl}/tasks/${taskId}`);
+  }
 }

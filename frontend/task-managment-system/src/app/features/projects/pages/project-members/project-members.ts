@@ -1,6 +1,6 @@
 import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { ProjectMembersService } from '../../data/project-members.service';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProjectMember, ProjectRole } from '../../data/models/project-member.model';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { UserService } from '../../../../shared/services/user.service';
@@ -12,7 +12,7 @@ import { ToastService } from '../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-project-members',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './project-members.html',
   styleUrl: './project-members.scss',
 })

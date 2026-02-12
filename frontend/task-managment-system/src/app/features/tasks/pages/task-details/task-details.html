@@ -1,0 +1,52 @@
+<button class="btn btn-outline-secondary" routerLink="../">← Back</button>
+
+<div class="container mt-4">
+  @if (loading()) {
+    <div class="spinner-border spinner-border-sm"></div>
+  }
+
+  @if (!loading() && error()) {
+    <div class="alert alert-danger">
+      {{ error() }}
+    </div>
+  }
+
+  @if (!loading() && task()) {
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="mb-3">
+          {{ task()!.title }}
+        </h4>
+
+        <div class="text-muted small mb-2">
+          Assignee:
+          @if (task()?.assigneeFullName) {
+            {{ task()?.assigneeFullName }}
+          } @else {
+            <span class="text-muted">Unassigned</span>
+          }
+        </div>
+
+        <div class="mb-2 text-muted small">Status: {{ task()!.statusLabel }}</div>
+
+        <div class="mb-2 text-muted small">Priority: {{ task()!.priority }}</div>
+
+        @if (task()!.dueDate) {
+          <div class="mb-2 text-muted small">Due: {{ task()!.dueDate | date: 'mediumDate' }}</div>
+        }
+
+        @if (task()!.description) {
+          <hr />
+          <div class="mb-3">
+            {{ task()!.description }}
+          </div>
+        }
+
+        <hr />
+
+        <div class="text-muted small">Created: {{ task()!.createdAt | date: 'medium' }}</div>
+        <div class="text-muted small">Created by: {{ task()?.createdByFullName }}</div>
+      </div>
+    </div>
+  }
+</div>

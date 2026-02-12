@@ -9,9 +9,9 @@
   </select>
 
   <select class="form-select" formControlName="role">
-    <option [value]="projectRoleEnum.DEVELOPER">Developer</option>
-    <option [value]="projectRoleEnum.QA">QA</option>
-    <option [value]="projectRoleEnum.PROJECT_MANAGER">Project Manager</option>
+    <option [ngValue]="projectRoleEnum.DEVELOPER">Developer</option>
+    <option [ngValue]="projectRoleEnum.QA">QA</option>
+    <option [ngValue]="projectRoleEnum.PROJECT_MANAGER">Project Manager</option>
   </select>
 
   <button class="btn btn-primary" [disabled]="addForm.invalid">Add Member</button>
@@ -54,12 +54,13 @@
             } @else {
               <select
                 class="form-select form-select-sm"
-                [value]="m.role"
-                (change)="changeRole(m.userId, $any($event.target).value)"
+                [ngModel]="m.role"
+                (ngModelChange)="changeRole(m.userId, $event)"
+                [ngModelOptions]="{ standalone: true }"
               >
-                <option [value]="projectRoleEnum.DEVELOPER">Developer</option>
-                <option [value]="projectRoleEnum.QA">QA</option>
-                <option [value]="projectRoleEnum.PROJECT_MANAGER">Project Manager</option>
+                <option [ngValue]="projectRoleEnum.DEVELOPER">Developer</option>
+                <option [ngValue]="projectRoleEnum.QA">QA</option>
+                <option [ngValue]="projectRoleEnum.PROJECT_MANAGER">Project Manager</option>
               </select>
             }
           </td>

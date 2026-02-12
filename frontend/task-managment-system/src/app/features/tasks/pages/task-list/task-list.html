@@ -32,7 +32,7 @@
 
       <tbody>
         @for (task of tasks(); track task.id) {
-          <tr>
+          <tr [routerLink]="[task.id]" class="table-hover" style="cursor: pointer">
             <td>{{ task.title }}</td>
 
             <td>

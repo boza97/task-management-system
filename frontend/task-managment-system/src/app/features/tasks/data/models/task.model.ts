@@ -10,6 +10,7 @@ export interface Task {
   statusLabel: string;
   projectId: string;
   createdById: string;
+  createdByFullName: string;
   assigneeId?: string | null;
   assigneeFullName?: string | null;
   createdAt: string;
