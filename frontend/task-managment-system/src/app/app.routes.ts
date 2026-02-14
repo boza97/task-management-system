@@ -1,4 +1,8 @@
 import { Routes } from '@angular/router';
+import { provideState } from '@ngrx/store';
+import { TASK_FEATURE_KEY, taskReducer } from './features/tasks/data/store/tas.reducer';
+import { provideEffects } from '@ngrx/effects';
+import { TaskEffects } from './features/tasks/data/store/task.effects';
 
 export const routes: Routes = [
   {
@@ -52,6 +56,7 @@ export const routes: Routes = [
           },
           {
             path: 'tasks',
+            providers: [provideState(TASK_FEATURE_KEY, taskReducer), provideEffects(TaskEffects)],
             children: [
               {
                 path: '',

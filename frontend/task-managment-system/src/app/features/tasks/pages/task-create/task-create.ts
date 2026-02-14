@@ -27,8 +27,8 @@ export class TaskCreate {
 
   taskPriorityEnum = TaskPriority;
   form = this.fb.nonNullable.group({
-    title: ['', [Validators.required]],
-    description: [''],
+    title: ['', [Validators.required, Validators.maxLength(200)]],
+    description: ['', [Validators.maxLength(5000)]],
     priority: [TaskPriority.MEDIUM, [Validators.required]],
     dueDate: [''],
     assigneeId: [null as string | null],
