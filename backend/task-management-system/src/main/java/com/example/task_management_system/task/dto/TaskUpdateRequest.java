@@ -12,7 +12,7 @@ public record TaskUpdateRequest(
         @Size(max = 200)
         String title,
 
-        @Size(max = 500)
+        @Size(max = 5000)
         String description,
 
         @NotNull
