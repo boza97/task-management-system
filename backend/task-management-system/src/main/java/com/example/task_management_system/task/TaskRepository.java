@@ -10,4 +10,7 @@ import java.util.UUID;
 public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     List<Task> findAllByProjectIdOrderByUpdatedAtDesc(UUID projectId);
+
+    boolean existsByProjectIdAndAssigneeId(UUID projectId, UUID assigneeId);
+
 }

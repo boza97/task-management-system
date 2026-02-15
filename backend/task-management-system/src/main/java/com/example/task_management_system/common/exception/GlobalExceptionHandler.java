@@ -49,6 +49,12 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(MemberHasAssignedTasksException.class)
+    public ResponseEntity<ApiErrorResponse> handleMemberHasTasks(MemberHasAssignedTasksException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(new ApiErrorResponse(409, ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleValidation(MethodArgumentNotValidException ex) {

@@ -1,5 +1,6 @@
 package com.example.task_management_system.project.membership;
 
+import com.example.task_management_system.common.exception.MemberHasAssignedTasksException;
 import com.example.task_management_system.common.exception.ResourceNotFoundException;
 import com.example.task_management_system.common.security.CurrentUserProvider;
 import com.example.task_management_system.project.Project;
@@ -7,6 +8,7 @@ import com.example.task_management_system.project.ProjectRepository;
 import com.example.task_management_system.project.membership.dto.AddMemberRequest;
 import com.example.task_management_system.project.membership.dto.ChangeMemberRoleRequest;
 import com.example.task_management_system.project.membership.dto.ProjectMemberResponse;
+import com.example.task_management_system.task.TaskRepository;
 import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ public class ProjectMembershipServiceImpl implements ProjectMembershipService {
     private final ProjectMembershipRepository membershipRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
     private final CurrentUserProvider currentUserProvider;
 
     @Override
@@ -88,6 +91,15 @@ public class ProjectMembershipServiceImpl implements ProjectMembershipService {
 
         if (!project.canBeUpdatedBy(currentUser)) {
             throw new AccessDeniedException("Not allowed to remove members");
+        }
+
+        boolean hasAssignedTasks =
+                taskRepository.existsByProjectIdAndAssigneeId(projectId, userId);
+
+        if (hasAssignedTasks) {
+            throw new MemberHasAssignedTasksException(
+                    "Cannot remove member because they are assigned to tasks"
+            );
         }
 
         if (project.getOwner().getId().equals(userId)) {
