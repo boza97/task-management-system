@@ -28,84 +28,117 @@
           </button>
         </div>
 
-        @if (editMain()) {
-          <form class="mb-4" [formGroup]="mainForm" (ngSubmit)="saveMain()">
-            <div class="mb-3">
-              <label class="form-label" for="taskTitle">Title</label>
-              <input id="taskTitle" class="form-control" formControlName="title" />
-            </div>
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              [class.active]="activeTab() === 'overview'"
+              (click)="activeTab.set('overview')"
+            >
+              Overview
+            </button>
+          </li>
 
-            <div class="mb-3">
-              <label class="form-label" for="taskDescription">Description</label>
-              <textarea
-                id="taskDescription"
-                rows="5"
-                class="form-control"
-                formControlName="description"
-              >
-              </textarea>
-            </div>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              [class.active]="activeTab() === 'comments'"
+              (click)="activeTab.set('comments')"
+            >
+              Comments
+            </button>
+          </li>
 
-            <div class="row">
-              <div class="col-md-4">
-                <label class="form-label" for="taskPriority">Priority</label>
-                <select id="taskPriority" class="form-select" formControlName="priority">
-                  <option [ngValue]="taskPriorityEnum.LOW">Low</option>
-                  <option [ngValue]="taskPriorityEnum.MEDIUM">Medium</option>
-                  <option [ngValue]="taskPriorityEnum.HIGH">High</option>
-                  <option [ngValue]="taskPriorityEnum.CRITICAL">Critical</option>
-                </select>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              [class.active]="activeTab() === 'history'"
+              (click)="activeTab.set('history')"
+            >
+              History
+            </button>
+          </li>
+        </ul>
+
+        @if (activeTab() === 'overview') {
+          @if (editMain()) {
+            <form class="mb-4" [formGroup]="mainForm" (ngSubmit)="saveMain()">
+              <div class="mb-3">
+                <label class="form-label" for="taskTitle">Title</label>
+                <input id="taskTitle" class="form-control" formControlName="title" />
               </div>
 
-              <div class="col-md-4">
-                <label class="form-label" for="taskDueDate">Due date</label>
-                <input
-                  id="taskDueDate"
-                  type="date"
+              <div class="mb-3">
+                <label class="form-label" for="taskDescription">Description</label>
+                <textarea
+                  id="taskDescription"
+                  rows="5"
                   class="form-control"
-                  formControlName="dueDate"
-                />
+                  formControlName="description"
+                ></textarea>
               </div>
+
+              <div class="row">
+                <div class="col-md-4">
+                  <label class="form-label" for="taskPriority">Priority</label>
+                  <select id="taskPriority" class="form-select" formControlName="priority">
+                    <option [ngValue]="taskPriorityEnum.LOW">Low</option>
+                    <option [ngValue]="taskPriorityEnum.MEDIUM">Medium</option>
+                    <option [ngValue]="taskPriorityEnum.HIGH">High</option>
+                    <option [ngValue]="taskPriorityEnum.CRITICAL">Critical</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label" for="taskDueDate">Due date</label>
+                  <input
+                    id="taskDueDate"
+                    type="date"
+                    class="form-control"
+                    formControlName="dueDate"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button class="btn btn-primary" [disabled]="mainForm.pristine || mainForm.invalid">
+                  Save changes
+                </button>
+              </div>
+            </form>
+          } @else {
+            <div class="text-muted small mb-2">
+              Assignee:
+              @if (task()?.assigneeFullName) {
+                {{ task()?.assigneeFullName }}
+              } @else {
+                <span class="text-muted">Unassigned</span>
+              }
             </div>
 
-            <div class="mt-3">
-              <button class="btn btn-primary" [disabled]="mainForm.pristine || mainForm.invalid">
-                Save changes
-              </button>
-            </div>
-          </form>
-        } @else {
-          <div class="text-muted small mb-2">
-            Assignee:
-            @if (task()?.assigneeFullName) {
-              {{ task()?.assigneeFullName }}
-            } @else {
-              <span class="text-muted">Unassigned</span>
+            <div class="mb-2 text-muted small">Status: {{ task()!.statusLabel }}</div>
+
+            <div class="mb-2 text-muted small">Priority: {{ task()!.priority }}</div>
+
+            @if (task()!.dueDate) {
+              <div class="mb-2 text-muted small">
+                Due: {{ task()!.dueDate | date: 'mediumDate' }}
+              </div>
             }
-          </div>
 
-          <div class="mb-2 text-muted small">Status: {{ task()!.statusLabel }}</div>
-
-          <div class="mb-2 text-muted small">Priority: {{ task()!.priority }}</div>
-
-          @if (task()!.dueDate) {
-            <div class="mb-2 text-muted small">Due: {{ task()!.dueDate | date: 'mediumDate' }}</div>
+            @if (task()!.description) {
+              <hr />
+              <div class="mb-3">
+                {{ task()!.description }}
+              </div>
+            }
           }
 
-          @if (task()!.description) {
-            <hr />
-            <div class="mb-3">
-              {{ task()!.description }}
-            </div>
-          }
-        }
+          <hr />
 
-        <hr />
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="taskStatus">Status</label>
 
-        <div class="mb-3">
-          <label class="form-label fw-semibold" for="taskStatus">Status</label>
-
-          <div class="d-flex gap-2 align-items-center">
             <select
               id="taskStatus"
               class="form-select form-select-sm w-auto"
@@ -120,34 +153,39 @@
               }
             </select>
           </div>
-        </div>
 
-        <div class="mb-3">
-          <label class="form-label fw-semibold" for="taskAssignee">Assignee</label>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="taskAssignee">Assignee</label>
 
-          <select
-            id="taskAssignee"
-            class="form-select form-select-sm w-auto"
-            [ngModel]="task()!.assigneeId"
-            (ngModelChange)="changeAssignee($event)"
-            [ngModelOptions]="{ standalone: true }"
-          >
-            <option [ngValue]="null">Unassigned</option>
+            <select
+              id="taskAssignee"
+              class="form-select form-select-sm w-auto"
+              [ngModel]="task()!.assigneeId"
+              (ngModelChange)="changeAssignee($event)"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <option [ngValue]="null">Unassigned</option>
 
-            @for (m of members(); track m.userId) {
-              <option [ngValue]="m.userId">{{ m.firstName }} {{ m.lastName }}</option>
-            }
-          </select>
-        </div>
+              @for (m of members(); track m.userId) {
+                <option [ngValue]="m.userId">{{ m.firstName }} {{ m.lastName }}</option>
+              }
+            </select>
+          </div>
 
-        <hr />
+          <hr />
 
-        <div class="text-muted small">Created: {{ task()!.createdAt | date: 'medium' }}</div>
-        <div class="text-muted small">Created by: {{ task()?.createdByFullName }}</div>
+          <div class="text-muted small">Created: {{ task()!.createdAt | date: 'medium' }}</div>
+          <div class="text-muted small">Created by: {{ task()?.createdByFullName }}</div>
+        }
+
+        @if (activeTab() === 'comments') {
+          <app-task-comments></app-task-comments>
+        }
+
+        @if (activeTab() === 'history') {
+          <app-task-audit></app-task-audit>
+        }
       </div>
     </div>
   }
 </div>
-
-<hr />
-<app-task-comments></app-task-comments>

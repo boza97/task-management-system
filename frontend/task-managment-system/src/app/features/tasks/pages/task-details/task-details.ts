@@ -19,10 +19,11 @@ import { ProjectMembersService } from '../../../projects/data/project-members.se
 import { Task } from '../../data/models/task.model';
 import { TaskService } from '../../data/task.service';
 import { TaskComments } from '../../comments/components/task-comments/task-comments';
+import { TaskAudit } from '../../audit/components/task-audit/task-audit';
 
 @Component({
   selector: 'app-task-details',
-  imports: [DatePipe, RouterLink, ReactiveFormsModule, FormsModule, TaskComments],
+  imports: [DatePipe, RouterLink, ReactiveFormsModule, FormsModule, TaskComments, TaskAudit],
   templateUrl: './task-details.html',
   styleUrl: './task-details.scss',
 })
@@ -46,6 +47,7 @@ export class TaskDetails {
   );
   taskStatuses = toSignal(this.tasksService.getTaskStatuses());
 
+  activeTab = signal<'overview' | 'comments' | 'history'>('overview');
   editMain = signal(false);
   mainForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(200)]],

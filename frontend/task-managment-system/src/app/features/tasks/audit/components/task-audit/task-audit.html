@@ -1,0 +1,45 @@
+<h5 class="mb-3">History</h5>
+
+@if (loading()) {
+  <div class="text-muted">Loading history...</div>
+}
+
+@if (!loading() && error()) {
+  <div class="alert alert-danger">
+    {{ error() }}
+  </div>
+}
+
+@if (!loading() && !error() && items().length === 0) {
+  <div class="text-muted">No activity yet.</div>
+}
+
+<div class="timeline">
+  @for (item of items(); track item.id) {
+    <div class="timeline-item">
+      <div class="timeline-time text-muted small">
+        {{ item.timestamp | date: 'medium' }}
+      </div>
+
+      <div class="timeline-content">
+        <div class="fw-semibold">
+          {{ label(item.actionType) }}
+        </div>
+
+        <div class="small text-muted">by {{ item.performedByName }}</div>
+
+        @if (item.oldValue || item.newValue) {
+          <div class="mt-1 small">
+            <span class="text-muted">{{ item.oldValue }}</span>
+            <span
+              class="mx-1"
+              [class.d-block]="item.actionType === actionTypeEnum.DESCRIPTION_CHANGED"
+              >→</span
+            >
+            <span>{{ item.newValue }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

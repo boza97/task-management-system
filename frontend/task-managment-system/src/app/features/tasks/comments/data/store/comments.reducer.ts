@@ -28,7 +28,7 @@ export const commentsReducer = createReducer(
   })),
   on(CommentsAction.addCommentSuccess, (state, { comment }) => ({
     ...state,
-    items: [...state.items, comment],
+    items: [comment, ...state.items],
   })),
   on(CommentsAction.deleteCommentSuccess, (state, { commentId }) => ({
     ...state,
