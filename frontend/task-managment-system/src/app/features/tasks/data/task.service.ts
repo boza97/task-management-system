@@ -37,4 +37,8 @@ export class TaskService {
   getTaskStatuses() {
     return this.http.get<TaskStatus[]>(`${environment.apiUrl}/task-statuses`);
   }
+
+  deleteTask(taskId: string) {
+    return this.http.delete<void>(`${environment.apiUrl}/tasks/${taskId}`);
+  }
 }

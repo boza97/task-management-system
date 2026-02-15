@@ -69,7 +69,7 @@ export class TaskCreate {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.router.navigate(['../tasks'], { relativeTo: this.route });
+          this.router.navigate(['../'], { relativeTo: this.route });
         },
         error: () => {
           this.loading.set(false);
