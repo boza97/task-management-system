@@ -1,0 +1,40 @@
+<h5 class="mb-3">Comments</h5>
+
+<form class="mb-3" [formGroup]="form" (ngSubmit)="add()">
+  <textarea
+    rows="3"
+    class="form-control"
+    placeholder="Write a comment..."
+    formControlName="content"
+  >
+  </textarea>
+
+  <button class="btn btn-primary btn-sm mt-2" [disabled]="form.invalid">Add comment</button>
+</form>
+
+@if (loading()) {
+  <div class="text-muted">Loading comments...</div>
+}
+
+@for (c of comments(); track c.id) {
+  <div class="border rounded p-2 mb-2">
+    <div class="small fw-semibold">
+      {{ c.authorFullName }}
+      <span class="text-muted ms-2">
+        {{ c.createdAt | date: 'short' }}
+      </span>
+    </div>
+
+    <div class="mt-1">
+      {{ c.content }}
+    </div>
+
+    <button
+      class="btn btn-sm btn-outline-danger mt-1"
+      (click)="delete(c.id)"
+      [disabled]="!canDelete(c)"
+    >
+      Delete
+    </button>
+  </div>
+}

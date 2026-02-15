@@ -3,6 +3,11 @@ import { provideState } from '@ngrx/store';
 import { TASK_FEATURE_KEY, taskReducer } from './features/tasks/data/store/tas.reducer';
 import { provideEffects } from '@ngrx/effects';
 import { TaskEffects } from './features/tasks/data/store/task.effects';
+import {
+  COMMENTS_FEATURE_KEY,
+  commentsReducer,
+} from './features/tasks/comments/data/store/comments.reducer';
+import { CommentsEffects } from './features/tasks/comments/data/store/comments.effects';
 
 export const routes: Routes = [
   {
@@ -72,6 +77,10 @@ export const routes: Routes = [
               },
               {
                 path: ':taskId',
+                providers: [
+                  provideState(COMMENTS_FEATURE_KEY, commentsReducer),
+                  provideEffects(CommentsEffects),
+                ],
                 loadComponent: () =>
                   import('./features/tasks/pages/task-details/task-details').then(
                     (m) => m.TaskDetails,

@@ -18,10 +18,11 @@ import { filter, map, switchMap } from 'rxjs';
 import { ProjectMembersService } from '../../../projects/data/project-members.service';
 import { Task } from '../../data/models/task.model';
 import { TaskService } from '../../data/task.service';
+import { TaskComments } from '../../comments/components/task-comments/task-comments';
 
 @Component({
   selector: 'app-task-details',
-  imports: [DatePipe, RouterLink, ReactiveFormsModule, FormsModule],
+  imports: [DatePipe, RouterLink, ReactiveFormsModule, FormsModule, TaskComments],
   templateUrl: './task-details.html',
   styleUrl: './task-details.scss',
 })
