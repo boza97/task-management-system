@@ -12,6 +12,7 @@ import com.example.task_management_system.task.comment.dto.CommentResponse;
 import com.example.task_management_system.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -86,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
         boolean isAdmin = currentUser.getRoles().stream().anyMatch(r -> r.getName().equals("ADMIN"));
 
         if (!isAuthor && !isAdmin) {
-            throw new SecurityException("Only comment author or admin can delete comment");
+            throw new AccessDeniedException("Only comment author or admin can delete comment");
         }
 
         AuditLog log = new AuditLog();
@@ -105,7 +106,7 @@ public class CommentServiceImpl implements CommentService {
                 comment.getId(),
                 comment.getContent(),
                 comment.getAuthor().getId(),
-                comment.getAuthor().getEmail(),
+                comment.getAuthor().getFirstName() + " " + comment.getAuthor().getLastName(),
                 comment.getCreatedAt()
         );
     }

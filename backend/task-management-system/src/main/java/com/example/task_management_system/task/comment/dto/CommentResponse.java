@@ -7,7 +7,7 @@ public record CommentResponse(
         UUID id,
         String content,
         UUID authorId,
-        String authorEmail,
+        String authorFullName,
         Instant createdAt
 ) {
 }

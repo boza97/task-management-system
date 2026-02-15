@@ -21,4 +21,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """)
     Optional<User> findByEmailWithRoles(@Param("email") String email);
 
+    @Query("""
+            
+                select u from User u
+                left join fetch u.roles
+                where u.id = :id
+            """)
+    Optional<User> findByIdWithRoles(@Param("id") UUID id);
+
 }

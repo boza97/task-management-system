@@ -12,6 +12,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -28,15 +29,15 @@ public class JwtService {
     public String generateToken(User user) {
         Instant now = Instant.now();
 
-        return Jwts.builder().subject(user.getEmail()).claim("firstName", user.getFirstName())
+        return Jwts.builder().subject(user.getId().toString()).claim("firstName", user.getFirstName())
                    .claim("lastName", user.getLastName())
+                   .claim("email", user.getEmail())
                    .claim("roles", user.getRoles().stream().map(Role::getName).toList()).issuedAt(Date.from(now))
                    .expiration(Date.from(now.plusMillis(expirationMinutes))).signWith(key).compact();
     }
 
-    public String validateAndGetSubject(String token) {
+    public UUID validateAndGetUserId(String token) {
         Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
-
-        return claims.getSubject();
+        return UUID.fromString(claims.getSubject());
     }
 }

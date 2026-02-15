@@ -2,6 +2,7 @@ package com.example.task_management_system.task.comment;
 
 import com.example.task_management_system.task.comment.dto.CommentCreateRequest;
 import com.example.task_management_system.task.comment.dto.CommentResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +27,7 @@ public class CommentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentResponse addComment(@PathVariable UUID taskId,
-                                      @RequestBody CommentCreateRequest request) {
+                                      @Valid @RequestBody CommentCreateRequest request) {
         return commentService.addComment(taskId, request);
     }
 
