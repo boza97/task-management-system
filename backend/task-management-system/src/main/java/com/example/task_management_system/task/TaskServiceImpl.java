@@ -4,6 +4,8 @@ import com.example.task_management_system.common.exception.ResourceNotFoundExcep
 import com.example.task_management_system.common.security.CurrentUserProvider;
 import com.example.task_management_system.project.Project;
 import com.example.task_management_system.project.ProjectRepository;
+import com.example.task_management_system.project.membership.ProjectMembershipRepository;
+import com.example.task_management_system.project.membership.ProjectRole;
 import com.example.task_management_system.task.audit.ActionType;
 import com.example.task_management_system.task.audit.AuditLog;
 import com.example.task_management_system.task.audit.AuditLogRepository;
@@ -18,6 +20,7 @@ import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +38,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskStatusRepository taskStatusRepository;
     private final UserRepository userRepository;
     private final CurrentUserProvider currentUserProvider;
+    private final ProjectMembershipRepository membershipRepository;
 
     @Override
     public TaskResponse create(TaskCreateRequest request) {
@@ -74,7 +78,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResponse> getByProject(UUID projectId) {
-        return taskRepository.findAllByProjectId(projectId).stream()
+        return taskRepository.findAllByProjectIdOrderByUpdatedAtDesc(projectId).stream()
                              .map(this::mapToResponse).toList();
     }
 
@@ -174,6 +178,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void delete(UUID taskId) {
         Task task = getTaskOrThrow(taskId);
+        User currentUser = currentUserProvider.getCurrentUser();
+
+        requireDeletePermission(task, currentUser);
         taskRepository.delete(task);
     }
 
@@ -191,6 +198,30 @@ public class TaskServiceImpl implements TaskService {
         log.setNewValue(newValue);
 
         auditLogRepository.save(log);
+    }
+
+    private void requireDeletePermission(Task task, User user) {
+        if (user.hasRole("ADMIN")) {
+            return;
+        }
+
+        if (task.getCreatedBy().getId().equals(user.getId())) {
+            return;
+        }
+
+        boolean isProjectManager =
+                membershipRepository.existsByProjectIdAndUserIdAndRole(
+                        task.getProject().getId(),
+                        user.getId(),
+                        ProjectRole.PROJECT_MANAGER
+                );
+
+        if (isProjectManager) {
+            return;
+        }
+
+        throw new AccessDeniedException("You cannot delete this task");
+
     }
 
     private TaskResponse mapToResponse(Task task) {
