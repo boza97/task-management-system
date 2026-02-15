@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { selectProject } from '../../data/store/project.selectors';
 import { distinctUntilChanged } from 'rxjs';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { TokenStorageService } from '../../../../shared/services/token-storage.service';
 
 @Component({
   selector: 'app-project-members',
@@ -22,6 +23,7 @@ export class ProjectMembers implements OnInit {
   private readonly userService = inject(UserService);
   private readonly fb = inject(FormBuilder);
   private readonly toastService = inject(ToastService);
+  private readonly tokenStorageService = inject(TokenStorageService);
   private readonly destroyRef = inject(DestroyRef);
 
   projectRoleEnum = ProjectRole;
@@ -41,6 +43,13 @@ export class ProjectMembers implements OnInit {
     const membersIds = new Set(this.members().map((member) => member.userId));
     return this.users().filter((user) => !membersIds.has(user.id));
   });
+  isCurrentUserProjectManager = computed(() =>
+    this.members().find(
+      (m) =>
+        m.userId === this.tokenStorageService.getUser()?.sub &&
+        m.role === ProjectRole.PROJECT_MANAGER,
+    ),
+  );
 
   constructor() {
     effect(() => {
@@ -86,6 +95,9 @@ export class ProjectMembers implements OnInit {
       .subscribe({
         next: () => {
           this.members.update((prev) => prev.filter((m) => m.userId !== userId));
+        },
+        error: (err) => {
+          this.toastService.show(err?.error?.message ?? 'Unable to delete member', 'error');
         },
       });
   }

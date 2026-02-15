@@ -1,21 +1,25 @@
 <h4 class="mb-3">Project Members</h4>
 
-<form class="mb-4 d-flex gap-2" [formGroup]="addForm" (ngSubmit)="addMember()">
-  <select class="form-select" formControlName="userId">
-    <option value="">Select user</option>
-    @for (user of availableUsers(); track user.id) {
-      <option [value]="user.id">{{ user.firstName }} {{ user.lastName }} ({{ user.email }})</option>
-    }
-  </select>
+@if (isCurrentUserProjectManager()) {
+  <form class="mb-4 d-flex gap-2" [formGroup]="addForm" (ngSubmit)="addMember()">
+    <select class="form-select" formControlName="userId">
+      <option value="">Select user</option>
+      @for (user of availableUsers(); track user.id) {
+        <option [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }} ({{ user.email }})
+        </option>
+      }
+    </select>
 
-  <select class="form-select" formControlName="role">
-    <option [ngValue]="projectRoleEnum.DEVELOPER">Developer</option>
-    <option [ngValue]="projectRoleEnum.QA">QA</option>
-    <option [ngValue]="projectRoleEnum.PROJECT_MANAGER">Project Manager</option>
-  </select>
+    <select class="form-select" formControlName="role">
+      <option [ngValue]="projectRoleEnum.DEVELOPER">Developer</option>
+      <option [ngValue]="projectRoleEnum.QA">QA</option>
+      <option [ngValue]="projectRoleEnum.PROJECT_MANAGER">Project Manager</option>
+    </select>
 
-  <button class="btn btn-primary" [disabled]="addForm.invalid">Add Member</button>
-</form>
+    <button class="btn btn-primary" [disabled]="addForm.invalid">Add Member</button>
+  </form>
+}
 
 @if (loading()) {
   <div class="text-muted">Loading members...</div>
@@ -34,7 +38,9 @@
         <th>Name</th>
         <th>Email</th>
         <th>Role</th>
-        <th class="text-end">Actions</th>
+        @if (isCurrentUserProjectManager()) {
+          <th class="text-end">Actions</th>
+        }
       </tr>
     </thead>
 
@@ -57,6 +63,7 @@
                 [ngModel]="m.role"
                 (ngModelChange)="changeRole(m.userId, $event)"
                 [ngModelOptions]="{ standalone: true }"
+                [disabled]="!isCurrentUserProjectManager()"
               >
                 <option [ngValue]="projectRoleEnum.DEVELOPER">Developer</option>
                 <option [ngValue]="projectRoleEnum.QA">QA</option>
@@ -64,15 +71,17 @@
               </select>
             }
           </td>
-          <td class="text-end">
-            <button
-              class="btn btn-sm btn-outline-danger"
-              [disabled]="m.userId === project()?.ownerId"
-              (click)="removeMember(m.userId)"
-            >
-              Remove
-            </button>
-          </td>
+          @if (isCurrentUserProjectManager()) {
+            <td class="text-end">
+              <button
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="m.userId === project()?.ownerId"
+                (click)="removeMember(m.userId)"
+              >
+                Remove
+              </button>
+            </td>
+          }
         </tr>
       }
     </tbody>
