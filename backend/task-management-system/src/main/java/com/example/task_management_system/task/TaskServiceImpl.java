@@ -134,23 +134,38 @@ public class TaskServiceImpl implements TaskService {
         Task task = getTaskOrThrow(taskId);
         User currentUser = currentUserProvider.getCurrentUser();
 
-        UUID oldId = task.getAssignee() == null ? null : task.getAssignee().getId();
-        UUID newId = request.assigneeId();
-
-        if (Objects.equals(oldId, newId)) {
-            return mapToResponse(task);
-        }
+        User oldAssignee = task.getAssignee();
+        UUID newAssigneeId = request.assigneeId();
 
         User newAssignee = null;
-        if (newId != null) {
-            newAssignee = userRepository.findById(newId)
+        if (newAssigneeId != null) {
+            newAssignee = userRepository.findById(newAssigneeId)
                                         .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
         }
 
-        String from = Objects.toString(oldId, null);
-        String to = Objects.toString(newId, null);
+        if (Objects.equals(
+                oldAssignee == null ? null : oldAssignee.getId(),
+                newAssignee == null ? null : newAssignee.getId()
+        )) {
+            return mapToResponse(task);
+        }
 
-        createAudit(task, currentUser, ActionType.ASSIGNEE_CHANGED, from, to);
+        String from = oldAssignee == null
+                ? "Unassigned"
+                : oldAssignee.getFirstName() + " " + oldAssignee.getLastName();
+
+        String to = newAssignee == null
+                ? "Unassigned"
+                : newAssignee.getFirstName() + " " + newAssignee.getLastName();
+
+        createAudit(
+                task,
+                currentUser,
+                ActionType.ASSIGNEE_CHANGED,
+                from,
+                to
+        );
+
         task.setAssignee(newAssignee);
 
         return mapToResponse(task);
