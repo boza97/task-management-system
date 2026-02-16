@@ -11,7 +11,7 @@ This project is developed as part of the *Advanced Software Technologies* course
 
 ## Class Diagram
 
-📌 Domain Model Overview (Task Management System)
+Domain Model Overview (Task Management System)
 
 This domain model represents a simple Task Management System (JIRA-like). The main entities are:
 
@@ -67,7 +67,10 @@ docker compose down
 
 ### Frontend
 
-TODO
+- Angular 21
+- Bootstrap 5
+- RxJs
+- Angular Signals
 
 ### Testing
 
@@ -78,6 +81,7 @@ TODO
 ## License
 
 Copyright © 2026 Božidar Mastilović
+
 
 
 
