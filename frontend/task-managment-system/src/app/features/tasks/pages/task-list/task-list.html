@@ -4,6 +4,12 @@
   <button class="btn btn-primary btn-sm" routerLink="../tasks/new">+ New Task</button>
 </div>
 
+<app-task-filter
+  [members]="members()"
+  [statuses]="statuses()"
+  (filtersChanged)="onFiltersChanged($event)"
+></app-task-filter>
+
 @if (loading()) {
   <div class="text-muted">Loading tasks...</div>
 }
@@ -15,7 +21,7 @@
 }
 
 @if (!loading() && !error()) {
-  @if (tasks().length === 0) {
+  @if (tasks()?.length === 0) {
     <div class="text-muted">No tasks yet</div>
   } @else {
     <table class="table table-hover">
@@ -27,6 +33,7 @@
           <th>Due Date</th>
           <th>Updated</th>
           <th>Assignee</th>
+          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -60,6 +67,9 @@
               } @else {
                 <span class="text-muted">Unassigned</span>
               }
+            </td>
+            <td>
+              {{ task.statusLabel }}
             </td>
             <td>
               <button

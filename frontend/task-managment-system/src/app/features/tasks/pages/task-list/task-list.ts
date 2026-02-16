@@ -1,50 +1,70 @@
 import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TaskService } from '../../data/task.service';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { catchError, filter, map, of, tap } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { selectProject } from '../../../projects/data/store/project.selectors';
 import { Task } from '../../data/models/task.model';
-import { ToastService } from '../../../../shared/services/toast.service';
 import { TokenStorageService } from '../../../../shared/services/token-storage.service';
+import {
+  selectTaskListError,
+  selectTaskListLoading,
+  selectTasks,
+} from '../../data/store/task.selectors';
+import { deleteTask, loadTasks, setTaskFilters } from '../../data/store/task.actions';
+import { TaskFilter } from '../../components/task-filter/task-filter';
+import { TaskFilters } from '../../data/models/task-filters.model';
+import { TaskService } from '../../data/task.service';
+import { ProjectMembersService } from '../../../projects/data/project-members.service';
+import { ProjectMember } from '../../../projects/data/models/project-member.model';
 
 @Component({
   selector: 'app-task-list',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TaskFilter],
   templateUrl: './task-list.html',
   styleUrl: './task-list.scss',
 })
 export class TaskList {
   private readonly store = inject(Store);
-  private readonly taskService = inject(TaskService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly toastService = inject(ToastService);
   private readonly tokenStorageService = inject(TokenStorageService);
+  private readonly taskService = inject(TaskService);
+  private readonly projectMembersService = inject(ProjectMembersService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  loading = signal(true);
-  error = signal<string | null>(null);
-  tasks = signal<Task[]>([]);
+  loading = toSignal(this.store.select(selectTaskListLoading));
+  error = toSignal(this.store.select(selectTaskListError));
+  tasks = toSignal(this.store.select(selectTasks));
   projectId = toSignal(
     this.store.select(selectProject).pipe(
       filter((x) => !!x),
       map((x) => x.id),
     ),
   );
+  statuses = toSignal(this.taskService.getTaskStatuses(), { initialValue: [] });
+  members = signal<ProjectMember[]>([]);
 
   constructor() {
     effect(() => {
       const projectId = this.projectId();
       if (projectId) {
-        this.loadTasksForProject(projectId);
+        this.store.dispatch(loadTasks({ projectId }));
+        this.loadProjectMembers(projectId);
       }
     });
   }
 
   onDeleteClick(event: MouseEvent, taskId: string) {
     event.stopPropagation();
-    this.deleteTask(taskId);
+    if (!confirm('Delete this task?')) {
+      return;
+    }
+
+    this.store.dispatch(deleteTask({ taskId }));
+  }
+
+  onFiltersChanged(filters: TaskFilters) {
+    this.store.dispatch(setTaskFilters({ filters }));
   }
 
   canDeleteTask(task: Task) {
@@ -52,42 +72,14 @@ export class TaskList {
     return currentUser?.roles.includes('ADMIN') || currentUser?.sub === task.createdById;
   }
 
-  private deleteTask(taskId: string) {
-    if (!confirm('Delete this task?')) {
-      return;
-    }
-
-    this.taskService
-      .deleteTask(taskId)
+  private loadProjectMembers(projectId: string) {
+    this.projectMembersService
+      .listMembers(projectId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          this.tasks.update((list) => list.filter((t) => t.id !== taskId));
-          this.toastService.show('Task deleted', 'success');
-        },
-        error: () => {
-          this.toastService.show('Failed to delete task', 'error');
+        next: (list) => {
+          this.members.set(list);
         },
       });
-  }
-
-  private loadTasksForProject(projectId: string) {
-    this.loading.set(true);
-
-    this.taskService
-      .getTasksForProject(projectId)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => {
-          this.loading.set(false);
-          this.error.set(null);
-        }),
-        catchError(() => {
-          this.loading.set(false);
-          this.error.set('Failed to load tasks');
-          return of([]);
-        }),
-      )
-      .subscribe((list) => this.tasks.set(list));
   }
 }

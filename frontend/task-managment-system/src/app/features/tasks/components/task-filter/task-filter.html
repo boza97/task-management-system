@@ -1,0 +1,58 @@
+<form class="card mb-3" [formGroup]="filters">
+  <div class="card-body">
+    <input
+      type="text"
+      class="form-control mb-3"
+      placeholder="Search by title..."
+      formControlName="search"
+    />
+
+    <div class="row g-2">
+      <div class="col-md-3">
+        <select class="form-select" formControlName="priority">
+          <option [ngValue]="null">All Priorities</option>
+          <option [ngValue]="taskPriorityEnum.LOW">Low</option>
+          <option [ngValue]="taskPriorityEnum.MEDIUM">Medium</option>
+          <option [ngValue]="taskPriorityEnum.HIGH">High</option>
+          <option [ngValue]="taskPriorityEnum.CRITICAL">Critical</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <select class="form-select" formControlName="statusCode">
+          <option [ngValue]="null">All Task Statuses</option>
+          @for (s of statuses(); track s.code) {
+            <option [ngValue]="s.code">{{ s.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <select class="form-select" formControlName="assigneeId">
+          <option [ngValue]="null">All assignees</option>
+          @for (m of members(); track m.userId) {
+            <option [ngValue]="m.userId">{{ m.firstName }} {{ m.lastName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-md-2 align-self-end">
+        <button type="button" class="btn btn-outline-secondary w-100" (click)="resetFilters()">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-2 mt-2">
+      <div class="col-md-3">
+        <label class="form-label small mb-0" for="dueDateFrom">Due from</label>
+        <input id="dueDateFrom" type="date" class="form-control" formControlName="dueDateFrom" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label small mb-0" for="dueDateTo">Due to</label>
+        <input id="dueDateTo" type="date" class="form-control" formControlName="dueDateTo" />
+      </div>
+    </div>
+  </div>
+</form>

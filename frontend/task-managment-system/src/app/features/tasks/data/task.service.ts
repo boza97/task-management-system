@@ -1,17 +1,44 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Task } from './models/task.model';
 import { CreateTaskRequest } from './models/create-task-request.model';
 import { UpdateTaskRequest } from './models/update-task-request.model';
 import { TaskStatus } from './models/task-status.model';
+import { TaskFilters } from './models/task-filters.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
   private readonly http = inject(HttpClient);
 
-  getTasksForProject(projectId: string) {
-    return this.http.get<Task[]>(`${environment.apiUrl}/tasks/project/${projectId}`);
+  getTasks(projectId: string, filters: TaskFilters) {
+    let params = new HttpParams();
+
+    if (filters.search) {
+      params = params.set('search', filters.search);
+    }
+
+    if (filters.priority) {
+      params = params.set('priority', filters.priority);
+    }
+
+    if (filters.statusCode) {
+      params = params.set('statusCode', filters.statusCode);
+    }
+
+    if (filters.assigneeId) {
+      params = params.set('assigneeId', filters.assigneeId);
+    }
+
+    if (filters.dueDateFrom) {
+      params = params.set('dueDateFrom', filters.dueDateFrom);
+    }
+
+    if (filters.dueDateTo) {
+      params = params.set('dueDateTo', filters.dueDateTo);
+    }
+
+    return this.http.get<Task[]>(`${environment.apiUrl}/tasks/project/${projectId}`, { params });
   }
 
   createTask(request: CreateTaskRequest) {

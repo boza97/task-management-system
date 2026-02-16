@@ -1,15 +1,19 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { TaskService } from '../task.service';
-import { map, switchMap, catchError, of, tap } from 'rxjs';
+import { map, switchMap, catchError, of, tap, withLatestFrom, filter } from 'rxjs';
 import * as TaskActions from './task.actions';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { Store } from '@ngrx/store';
+import { selectTaskFilters } from './task.selectors';
+import { selectProject } from '../../../projects/data/store/project.selectors';
 
 @Injectable()
 export class TaskEffects {
   private readonly actions$ = inject(Actions);
   private readonly taskService = inject(TaskService);
   private readonly toastService = inject(ToastService);
+  private readonly store = inject(Store);
 
   loadTask$ = createEffect(() =>
     this.actions$.pipe(
@@ -99,6 +103,62 @@ export class TaskEffects {
           TaskActions.changeTaskAssigneeFailure,
         ),
         tap((err) => this.toastService.show(err.error, 'error')),
+      ),
+    { dispatch: false },
+  );
+
+  loadTasks$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TaskActions.loadTasks),
+      withLatestFrom(this.store.select(selectTaskFilters)),
+      switchMap(([{ projectId }, filters]) =>
+        this.taskService.getTasks(projectId, filters).pipe(
+          map((tasks) => TaskActions.loadTasksSuccess({ tasks })),
+          catchError(() => of(TaskActions.loadTasksFailure({ error: 'Failed to load tasks' }))),
+        ),
+      ),
+    ),
+  );
+
+  reloadOnFiltersChange$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TaskActions.setTaskFilters),
+      withLatestFrom(
+        this.store.select(selectProject).pipe(
+          filter((x) => !!x),
+          map((x) => x.id),
+        ),
+      ),
+      map(([_, projectId]) => TaskActions.loadTasks({ projectId })),
+    ),
+  );
+
+  deleteTask$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TaskActions.deleteTask),
+      switchMap(({ taskId }) =>
+        this.taskService.deleteTask(taskId).pipe(
+          map(() => TaskActions.deleteTaskSuccess({ taskId })),
+          catchError(() => of(TaskActions.deleteTaskFailure({ error: 'Failed to delete task' }))),
+        ),
+      ),
+    ),
+  );
+
+  deleteTaskSuccessToast$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(TaskActions.deleteTaskSuccess),
+        tap(() => this.toastService.show('Task deleted', 'success')),
+      ),
+    { dispatch: false },
+  );
+
+  deleteTaskErrorToast$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(TaskActions.deleteTaskFailure),
+        tap(() => this.toastService.show('Failed to delete task', 'error')),
       ),
     { dispatch: false },
   );
