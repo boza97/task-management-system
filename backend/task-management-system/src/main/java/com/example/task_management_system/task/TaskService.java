@@ -4,6 +4,7 @@ import com.example.task_management_system.task.dto.ChangeAssigneeRequest;
 import com.example.task_management_system.task.dto.ChangeStatusRequest;
 import com.example.task_management_system.task.dto.TaskCreateRequest;
 import com.example.task_management_system.task.dto.TaskResponse;
+import com.example.task_management_system.task.dto.TaskSearchCriteria;
 import com.example.task_management_system.task.dto.TaskUpdateRequest;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public interface TaskService {
     TaskResponse getById(UUID taskId);
 
     List<TaskResponse> getByProject(UUID projectId);
+
+    List<TaskResponse> search(UUID projectId, TaskSearchCriteria criteria);
 
     TaskResponse update(UUID taskId, TaskUpdateRequest request);
 

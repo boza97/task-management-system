@@ -13,13 +13,16 @@ import com.example.task_management_system.task.dto.ChangeAssigneeRequest;
 import com.example.task_management_system.task.dto.ChangeStatusRequest;
 import com.example.task_management_system.task.dto.TaskCreateRequest;
 import com.example.task_management_system.task.dto.TaskResponse;
+import com.example.task_management_system.task.dto.TaskSearchCriteria;
 import com.example.task_management_system.task.dto.TaskUpdateRequest;
+import com.example.task_management_system.task.search.TaskSpecifications;
 import com.example.task_management_system.task.status.TaskStatus;
 import com.example.task_management_system.task.status.TaskStatusRepository;
 import com.example.task_management_system.user.User;
 import com.example.task_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +83,46 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponse> getByProject(UUID projectId) {
         return taskRepository.findAllByProjectIdOrderByUpdatedAtDesc(projectId).stream()
                              .map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public List<TaskResponse> search(UUID projectId, TaskSearchCriteria criteria) {
+        if (noFilters(criteria)) {
+            return getByProject(projectId);
+        }
+
+        Specification<Task> spec = Specification.where(
+                TaskSpecifications.projectEquals(projectId)
+        );
+
+        if (hasText(criteria.search())) {
+            spec = spec.and(TaskSpecifications.titleContains(criteria.search()));
+        }
+
+        if (criteria.priority() != null) {
+            spec = spec.and(TaskSpecifications.priorityEquals(criteria.priority()));
+        }
+
+        if (criteria.assigneeId() != null) {
+            spec = spec.and(TaskSpecifications.assigneeEquals(criteria.assigneeId()));
+        }
+
+        if (hasText(criteria.statusCode())) {
+            spec = spec.and(TaskSpecifications.statusCodeEquals(criteria.statusCode()));
+        }
+
+        if (criteria.dueDateFrom() != null) {
+            spec = spec.and(TaskSpecifications.dueDateFrom(criteria.dueDateFrom()));
+        }
+
+        if (criteria.dueDateTo() != null) {
+            spec = spec.and(TaskSpecifications.dueDateTo(criteria.dueDateTo()));
+        }
+
+        return taskRepository.findAll(spec)
+                             .stream()
+                             .map(this::mapToResponse)
+                             .toList();
     }
 
     @Override
@@ -223,6 +266,23 @@ public class TaskServiceImpl implements TaskService {
         throw new AccessDeniedException("You cannot delete this task");
 
     }
+
+    private boolean hasText(String s) {
+        return s != null && !s.isBlank();
+    }
+
+    private boolean noFilters(TaskSearchCriteria criteria) {
+        return criteria == null
+               || (
+                       !hasText(criteria.search())
+                       && criteria.priority() == null
+                       && criteria.assigneeId() == null
+                       && !hasText(criteria.statusCode())
+                       && criteria.dueDateFrom() == null
+                       && criteria.dueDateTo() == null
+               );
+    }
+
 
     private TaskResponse mapToResponse(Task task) {
         return new TaskResponse(

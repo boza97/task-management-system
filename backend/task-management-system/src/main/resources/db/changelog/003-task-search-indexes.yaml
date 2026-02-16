@@ -1,0 +1,30 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 001-task-search-indexes
+      author: bozidar
+      changes:
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_priority
+            columns:
+              - column:
+                  name: priority
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_due_date
+            columns:
+              - column:
+                  name: due_date
+
+  - changeSet:
+      id: 002-task-title-trigram-index
+      author: bozidar
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+        - sql:
+            sql: CREATE INDEX idx_tasks_title_trgm ON tasks USING gin (title gin_trgm_ops);

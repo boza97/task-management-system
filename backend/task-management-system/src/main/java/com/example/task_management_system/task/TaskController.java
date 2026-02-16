@@ -4,6 +4,7 @@ import com.example.task_management_system.task.dto.ChangeAssigneeRequest;
 import com.example.task_management_system.task.dto.ChangeStatusRequest;
 import com.example.task_management_system.task.dto.TaskCreateRequest;
 import com.example.task_management_system.task.dto.TaskResponse;
+import com.example.task_management_system.task.dto.TaskSearchCriteria;
 import com.example.task_management_system.task.dto.TaskUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -65,8 +66,8 @@ public class TaskController {
     }
 
 
-    @Operation(summary = "Get tasks for a project",
-            description = "Returns tasks for a given project")
+    @Operation(summary = "Search tasks for a project",
+            description = "Returns filtered tasks for a given project")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tasks returned successfully",
                     content = @Content(schema = @Schema(implementation = TaskResponse.class))),
@@ -74,8 +75,8 @@ public class TaskController {
                     content = @Content),
     })
     @GetMapping("/project/{projectId}")
-    public List<TaskResponse> getByProject(@PathVariable UUID projectId) {
-        return taskService.getByProject(projectId);
+    public List<TaskResponse> getByProject(@PathVariable UUID projectId, TaskSearchCriteria criteria) {
+        return taskService.search(projectId, criteria);
     }
 
     @Operation(summary = "Update task", description = "Updates task fields")
