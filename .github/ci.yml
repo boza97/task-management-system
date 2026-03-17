@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   detect-changes:
     name: Detect Changes
@@ -30,6 +34,12 @@ jobs:
             frontend:
               - 'frontend/**'
 
+      - name: detect changes summary
+        run: |
+          echo "## Change Detection" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend changed: ${{ steps.filter.outputs.backend }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend changed: ${{ steps.filter.outputs.frontend }}" >> $GITHUB_STEP_SUMMARY
+
   backend:
     name: Backend CI
     needs: detect-changes
@@ -49,15 +59,22 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
+          distribution: temurin
+          java-version: 21
+          cache: maven
 
       - name: Build backend
         run: mvn -B clean verify
 
       - name: Run backend unit tests
         run: mvn test
+
+      - name: Backend CI Summary
+        if: always()
+        run: |
+          echo "## Backend CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Maven build executed" >> $GITHUB_STEP_SUMMARY
+          echo "- Unit tests executed" >> $GITHUB_STEP_SUMMARY
 
   frontend:
     name: Frontend CI
@@ -90,3 +107,11 @@ jobs:
 
       - name: Run frontend tests
         run: npm run test --if-present
+
+      - name: Frontend CI Summary
+        if: always()
+        run: |
+          echo "## Frontend CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Dependencies installed" >> $GITHUB_STEP_SUMMARY
+          echo "- Build executed" >> $GITHUB_STEP_SUMMARY
+          echo "- Unit tests executed" >> $GITHUB_STEP_SUMMARY
