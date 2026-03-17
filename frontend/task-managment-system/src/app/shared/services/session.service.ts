@@ -9,7 +9,7 @@ export class SessionService {
   private readonly jwtHelper = inject(JwtHelperService);
   private readonly router = inject(Router);
 
-  private logoutTimer?: any;
+  private logoutTimer?: ReturnType<typeof setTimeout>;
 
   startSessionTimer(token: string) {
     if (this.logoutTimer) {

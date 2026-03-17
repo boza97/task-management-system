@@ -22,12 +22,12 @@ export const updateProjectSuccess = createAction(
 );
 export const updateProjectFailure = createAction(
   '[Project] Update Failure',
-  props<{ error: any }>(),
+  props<{ error: string }>(),
 );
 
 export const deleteProject = createAction('[Project] Delete', props<{ projectId: string }>());
 export const deleteProjectSuccess = createAction('[Project] Delete Success');
 export const deleteProjectFailure = createAction(
   '[Project] Delete Failure',
-  props<{ error: any }>(),
+  props<{ error: string }>(),
 );

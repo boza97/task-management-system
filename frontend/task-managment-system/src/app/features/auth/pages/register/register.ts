@@ -53,7 +53,7 @@ export class Register {
   constructor() {
     this.registerForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.registerForm.errors?.['serverError']) {
-        const { serverError, ...rest } = this.registerForm.errors;
+        const { serverError: _serverError, ...rest } = this.registerForm.errors;
         this.registerForm.setErrors(Object.keys(rest).length ? rest : null);
       }
 
@@ -102,7 +102,7 @@ export class Register {
       return;
     }
 
-    const { serverError, ...rest } = control.errors;
+    const { serverError: _serverError, ...rest } = control.errors;
     control.setErrors(Object.keys(rest).length ? rest : null);
   }
 }
