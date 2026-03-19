@@ -66,6 +66,9 @@ jobs:
       - name: Build backend
         run: mvn -B clean verify
 
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
+
       - name: Run backend unit tests
         run: mvn test
 
