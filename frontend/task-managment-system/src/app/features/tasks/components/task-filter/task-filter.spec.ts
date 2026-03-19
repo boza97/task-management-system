@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { TaskFilter } from './task-filter';
 
 describe('TaskFilter', () => {
-  let component: TaskFilter;
-  let fixture: ComponentFixture<TaskFilter>;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TaskFilter]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(TaskFilter);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+      imports: [TaskFilter],
+    }).compileComponents();
   });
 
   it('should create', () => {
+    const fixture = TestBed.createComponent(TaskFilter);
+    const component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('statuses', []);
+    fixture.componentRef.setInput('members', []);
+
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 });

@@ -7,6 +7,7 @@ import { LoginRequest } from '../../data/models/login-request.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ApiErrorResponse } from '../../../../shared/models/api-error-response.model';
 import { SessionService } from '../../../../shared/services/session.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class Login {
   constructor() {
     this.loginForm.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       if (this.loginForm.errors?.['serverError']) {
-        const { serverError, ...rest } = this.loginForm.errors;
+        const { serverError: _serverError, ...rest } = this.loginForm.errors;
         this.loginForm.setErrors(Object.keys(rest).length ? rest : null);
       }
     });
@@ -58,7 +59,7 @@ export class Login {
       });
   }
 
-  private handleLoginError(err: any): void {
+  private handleLoginError(err: HttpErrorResponse): void {
     const apiError = err.error as ApiErrorResponse | null;
 
     if (apiError?.globalErrors?.length) {

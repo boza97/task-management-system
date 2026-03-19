@@ -12,7 +12,6 @@ import {
 } from '../../data/store/task.actions';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskPriority } from '../../data/models/create-task-request.model';
-import { TaskStatus } from '../../data/models/task-status.model';
 import { selectProject } from '../../../projects/data/store/project.selectors';
 import { filter, map, switchMap } from 'rxjs';
 import { ProjectMembersService } from '../../../projects/data/project-members.service';

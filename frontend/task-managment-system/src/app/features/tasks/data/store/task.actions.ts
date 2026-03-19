@@ -30,7 +30,7 @@ export const changeTaskStatusSuccess = createAction(
 );
 export const changeTaskStatusFailure = createAction(
   '[Task] Change Status Failure',
-  props<{ error: any }>(),
+  props<{ error: string }>(),
 );
 
 export const changeTaskAssignee = createAction(
@@ -43,7 +43,7 @@ export const changeTaskAssigneeSuccess = createAction(
 );
 export const changeTaskAssigneeFailure = createAction(
   '[Task] Change Assignee Failure',
-  props<{ error: any }>(),
+  props<{ error: string }>(),
 );
 
 export const loadTasks = createAction('[Task List] Load Tasks', props<{ projectId: string }>());
