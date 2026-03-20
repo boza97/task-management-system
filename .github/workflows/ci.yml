@@ -63,7 +63,7 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build backend
+      - name: Build & Test backend
         run: mvn -B clean verify
 
       - name: Run Checkstyle
