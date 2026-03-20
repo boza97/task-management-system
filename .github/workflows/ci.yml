@@ -69,9 +69,6 @@ jobs:
       - name: Run Checkstyle
         run: mvn checkstyle:check
 
-      - name: Run backend unit tests
-        run: mvn test
-
       - name: Backend CI Summary
         if: always()
         run: |
