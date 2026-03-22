@@ -2,6 +2,7 @@ package com.example.task_management_system.config;
 
 import com.example.task_management_system.auth.JwtService;
 import com.example.task_management_system.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+
+    @Value("${cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService) throws Exception {
@@ -46,7 +50,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "http://localhost:4200"
+                allowedOrigins.split(",")
         ));
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
