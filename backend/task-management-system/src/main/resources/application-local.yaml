@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task_management
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+security:
+  jwt:
+    secret: "#@!#assaD!@@#!@$SAD@$!%@!%@Ss$#!@$@$FASFQ@QFSAFASF_CHANGE_ME"
