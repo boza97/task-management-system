@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,7 +80,10 @@ class CommentServiceImplTest {
 
         assertThatThrownBy(() ->
                                    commentService.addComment(UUID.randomUUID(), request)
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Comment content must not be empty");
+
+        verify(commentRepository, never()).save(any());
     }
 
     @Test
@@ -161,7 +166,10 @@ class CommentServiceImplTest {
 
         assertThatThrownBy(() ->
                                    commentService.deleteComment(taskId, commentId)
-        ).isInstanceOf(Exception.class);
+        ).isInstanceOf(AccessDeniedException.class)
+                .hasMessage("Only comment author or admin can delete comment");
+
+        verify(commentRepository, never()).delete(comment);
     }
 
     private User createUser(UUID id) {
