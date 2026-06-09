@@ -1,0 +1,13 @@
+spring:
+  liquibase:
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+security:
+  jwt:
+    secret: integration-test-secret-key-long-enough-for-hmac-signing
+    expiration-minutes: 30
