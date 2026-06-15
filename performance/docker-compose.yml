@@ -1,0 +1,20 @@
+services:
+  postgres-performance:
+    image: postgres:16-alpine
+    container_name: tms_performance_postgres
+    environment:
+      POSTGRES_DB: tms_performance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tms_performance"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - tms_performance_data:/var/lib/postgresql/data
+
+volumes:
+  tms_performance_data:
