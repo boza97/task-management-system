@@ -54,7 +54,7 @@ FROM benchmark_query(
     GROUP BY u.id, u.first_name, u.last_name
     HAVING count(*) >= 5
     ORDER BY task_count DESC, completed_count DESC
-    LIMIT 20
+    LIMIT 100
     $query$,
     'tasks'
 ) AS result;
