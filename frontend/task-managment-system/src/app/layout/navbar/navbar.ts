@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { TokenStorageService } from '../../shared/services/token-storage.service';
 import { Router } from '@angular/router';
+import { NotificationBell } from '../../features/notifications/components/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [NotificationBell],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })

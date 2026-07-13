@@ -1,0 +1,59 @@
+.notification-bell {
+  position: relative;
+
+  .badge {
+    font-size: 0.65rem;
+  }
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 340px;
+  max-height: 420px;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+
+  z-index: 1050;
+}
+
+.notification-list {
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: block;
+  width: 100%;
+
+  padding: 0.6rem 1rem;
+
+  text-align: left;
+
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f1f3f5;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &.unread {
+    background-color: #eef4ff;
+
+    &:hover {
+      background-color: #e2ecff;
+    }
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
