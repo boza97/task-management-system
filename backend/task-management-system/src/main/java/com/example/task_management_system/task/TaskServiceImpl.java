@@ -2,6 +2,7 @@ package com.example.task_management_system.task;
 
 import com.example.task_management_system.common.exception.ResourceNotFoundException;
 import com.example.task_management_system.common.security.CurrentUserProvider;
+import com.example.task_management_system.notification.NotificationService;
 import com.example.task_management_system.project.Project;
 import com.example.task_management_system.project.ProjectRepository;
 import com.example.task_management_system.project.membership.ProjectMembershipRepository;
@@ -42,6 +43,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
     private final CurrentUserProvider currentUserProvider;
     private final ProjectMembershipRepository membershipRepository;
+    private final NotificationService notificationService;
 
     @Override
     public TaskResponse create(TaskCreateRequest request) {
@@ -70,6 +72,10 @@ public class TaskServiceImpl implements TaskService {
 
         task = taskRepository.save(task);
         createAudit(task, currentUser, ActionType.TASK_CREATED, null, null);
+
+        if (task.getAssignee() != null) {
+            notificationService.notifyTaskAssigned(task.getAssignee(), task, currentUser);
+        }
 
         return mapToResponse(task);
     }
@@ -214,6 +220,10 @@ public class TaskServiceImpl implements TaskService {
         );
 
         task.setAssignee(newAssignee);
+
+        if (newAssignee != null) {
+            notificationService.notifyTaskAssigned(newAssignee, task, currentUser);
+        }
 
         return mapToResponse(task);
     }

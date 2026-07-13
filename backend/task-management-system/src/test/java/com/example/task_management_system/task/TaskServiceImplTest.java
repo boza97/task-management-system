@@ -2,6 +2,7 @@ package com.example.task_management_system.task;
 
 import com.example.task_management_system.common.exception.ResourceNotFoundException;
 import com.example.task_management_system.common.security.CurrentUserProvider;
+import com.example.task_management_system.notification.NotificationService;
 import com.example.task_management_system.project.Project;
 import com.example.task_management_system.project.ProjectRepository;
 import com.example.task_management_system.project.membership.ProjectMembershipRepository;
@@ -60,6 +61,8 @@ class TaskServiceImplTest {
     private CurrentUserProvider currentUserProvider;
     @Mock
     private ProjectMembershipRepository membershipRepository;
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private TaskServiceImpl taskService;
