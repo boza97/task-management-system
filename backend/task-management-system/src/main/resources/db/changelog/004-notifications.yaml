@@ -1,0 +1,64 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 013-create-notifications
+      author: bozidar
+      changes:
+        - createTable:
+            tableName: notifications
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: recipient_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_notifications_recipient
+                    references: users(id)
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: task_id
+                  type: uuid
+              - column:
+                  name: project_id
+                  type: uuid
+              - column:
+                  name: is_read
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 014-notifications-indexes
+      author: bozidar
+      changes:
+        - createIndex:
+            tableName: notifications
+            indexName: idx_notifications_recipient_unread
+            columns:
+              - column:
+                  name: recipient_id
+              - column:
+                  name: is_read
