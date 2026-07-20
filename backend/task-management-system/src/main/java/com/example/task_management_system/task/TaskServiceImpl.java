@@ -51,6 +51,11 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepository.findById(request.projectId())
                                            .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
+        if (!project.isOwner(currentUser) &&
+            !membershipRepository.existsByProjectIdAndUserId(project.getId(), currentUser.getId())) {
+            throw new AccessDeniedException("Only project members can create tasks");
+        }
+
         TaskStatus defaultStatus = taskStatusRepository.findByCode("TODO")
                                                        .orElseThrow(() -> new IllegalStateException(
                                                                "Default status TODO missing"));
@@ -67,6 +72,9 @@ public class TaskServiceImpl implements TaskService {
         if (request.assigneeId() != null) {
             User assignee = userRepository.findById(request.assigneeId())
                                           .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
+            if (!membershipRepository.existsByProjectIdAndUserId(project.getId(), assignee.getId())) {
+                throw new IllegalArgumentException("Assignee must be a project member");
+            }
             task.setAssignee(assignee);
         }
 
@@ -194,6 +202,9 @@ public class TaskServiceImpl implements TaskService {
         if (newAssigneeId != null) {
             newAssignee = userRepository.findById(newAssigneeId)
                                         .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
+            if (!membershipRepository.existsByProjectIdAndUserId(task.getProject().getId(), newAssignee.getId())) {
+                throw new IllegalArgumentException("Assignee must be a project member");
+            }
         }
 
         if (Objects.equals(
