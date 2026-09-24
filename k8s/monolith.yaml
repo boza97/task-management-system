@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tms-mono
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tms-secrets
+  namespace: tms-mono
+type: Opaque
+stringData:
+  jwt-secret: "change-me-super-secret-jwt-key-for-tms-thesis-0123456789"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: monolith-db-pvc
+  namespace: tms-mono
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monolith-db
+  namespace: tms-mono
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monolith-db
+  template:
+    metadata:
+      labels:
+        app: monolith-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: task_management
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres", "-d", "task_management"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: monolith-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monolith-db
+  namespace: tms-mono
+spec:
+  selector:
+    app: monolith-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monolith
+  namespace: tms-mono
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monolith
+  template:
+    metadata:
+      labels:
+        app: monolith
+    spec:
+      containers:
+        - name: monolith
+          image: localhost:5000/tms/monolith:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: DB_URL
+              value: jdbc:postgresql://monolith-db:5432/task_management
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: postgres
+            - name: CORS_ALLOWED_ORIGINS
+              value: http://localhost:4200
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tms-secrets
+                  key: jwt-secret
+          resources:
+            requests:
+              cpu: 1500m
+              memory: 2176Mi
+            limits:
+              cpu: "6"
+              memory: 4096Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 6
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monolith
+  namespace: tms-mono
+spec:
+  type: LoadBalancer
+  selector:
+    app: monolith
+  ports:
+    - port: 8080
+      targetPort: 8080
